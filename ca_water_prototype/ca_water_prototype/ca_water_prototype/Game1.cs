@@ -168,23 +168,39 @@ namespace ca_water_prototype
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||  kboardstate.IsKeyDown(Keys.Escape))
                 this.Exit();
 
-			if (mousestate.LeftButton == ButtonState.Pressed)
-			{
-				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
-				if (OnGrid( gridpos.X, gridpos.Y ))
-				{
-					cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Water;
-					cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 1000;
-				}
-			}
-
 			if (mousestate.RightButton == ButtonState.Pressed)
 			{
 				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
 				if (OnGrid( gridpos.X, gridpos.Y ))
 				{
-					cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 0;
-					cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Wall;
+					if (kboardstate.IsKeyDown( Keys.LeftShift ))
+					{
+						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 0;
+						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Empty;
+					}
+					else
+					{
+						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Water;
+						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 1000;
+					}
+				}
+			}
+
+			if (mousestate.LeftButton == ButtonState.Pressed)
+			{
+				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
+				if (OnGrid( gridpos.X, gridpos.Y ))
+				{
+					if (kboardstate.IsKeyDown( Keys.LeftShift ))
+					{
+						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 0;
+						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Empty;
+					}
+					else
+					{
+						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 0;
+						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Wall;
+					}
 				}
 			}
 				
@@ -331,7 +347,7 @@ namespace ca_water_prototype
 						int remainingMass = cells[row, col].mass;
 						int deltaUpperBound = 0; //when determining the deltaMass to move around, we may want to bound it to a max delta.
 
-						if (remainingMass <= 1) { continue; }
+						if (remainingMass < 4) { continue; } //if there isn't enough mass to work with, we'll ignore this block. Done after every rule.
 
 						//consider block below (if it exists)
 						if (row < Cell_Rows-1 && cells[row+1, col].is_fillable)
@@ -348,16 +364,19 @@ namespace ca_water_prototype
 							cells[row+1, col].future_mass += deltaMass;
 							remainingMass -= deltaMass;
 
+							if (cells[row+1,col].state == (int)CellState.Empty || cells[row+1,col].mass < cells[row,col].mass)
+							{ continue; }
+
 						} else if (row == Cell_Rows-1)
 						{	//if cell is against the edge of map, it loses mass to 'the void'
-							deltaMass = cells[row, col].mass / 2;
+							deltaMass = CompressibleMass( remainingMass); 
 							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; }
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
 							cells[row, col].future_mass -= deltaMass;
 							remainingMass -= deltaMass;
 						}
 
-						if (remainingMass <= 1) { continue; }
+						if (remainingMass < 4) { continue; }
 
 						//consider the left neighbor (if it exists)
 						if (col > 0 && cells[row, col-1].is_fillable)
@@ -382,7 +401,7 @@ namespace ca_water_prototype
 							remainingMass -= deltaMass;
 						}
 
-						if (remainingMass <= 1) { continue; }
+						if (remainingMass < 4) { continue; }
 
 						//consider the right neighbor (if it exists)
 						if (col < Cell_Columns-1 && cells[row, col+1].is_fillable)
@@ -407,7 +426,7 @@ namespace ca_water_prototype
 							remainingMass -= deltaMass;
 						}
 
-						if (remainingMass <= 1) { continue; }
+						if (remainingMass < 4) { continue; }
 
 						//consider cell above us (if it exists) Cell only adds to above cell if it has compressed mass)
 						if (row > 0 && cells[row-1, col].is_fillable)
