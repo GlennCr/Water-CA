@@ -1,0 +1,5 @@
+*.suo
+*.sln
+*.cachefile
+*.user
+.\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug
