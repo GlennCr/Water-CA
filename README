@@ -1,0 +1,22 @@
+This is my first attempt at Cellular Automation based on a presentation I gave in class 
+  (-found here-> https://docs.google.com/present/edit?id=0AUJdT9N_QOzyZGc4OTlqN25fNTg1Y2tzcDV6Y2g)
+
+I wanted to create a simple water simulator based on examples I'd seen in other games. About the only reference I'd used was wikipedia, and what it looked like in the game itself.
+Everything else about the code I tried to figure out myself.
+
+At first I was going with 3 simple rules:
+
+If bottom neighbor has less mass, move as much mass as is needed to fill it.
+If left neighbor has less mass, move half the difference to that neighbor.
+If right neighbor has less mass, move half the difference to that neighbor.
+
+I also decided to do everything with discrete values, to avoid issues with rounding errors.
+
+While it worked, the results were less than stellar and had a number of issues (such as constant volume swapping, whole blocks moving left or right).
+
+After much tweaking, I'd gotten this version. Unfortunately it develved into a kind of "mark values to see whats happening, see what happens when I change this rule slightly". 
+Kind of in the spirit of cellular automation after all, since a slight change in rules can cause drastic effects. BUT - I was wasting alot of hours not getting what I wanted.
+
+The next attempt I make will reuse alot of this code... 
+BUT, it will incorporate volume compression and a temporary "future mass" value so all changes from rules are applied AFTER rules had run. 
+(I was sort of trying to do this here, however I was getting the order wrong it seems)
