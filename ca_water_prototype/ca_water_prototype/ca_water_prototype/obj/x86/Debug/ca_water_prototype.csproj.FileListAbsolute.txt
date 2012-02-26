@@ -15,3 +15,8 @@ C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_p
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\error.xnb
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\grid.xnb
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\wall.xnb
+C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\water.png
+C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\error.png
+C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\grid.png
+C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\wall.png
+C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\segoe.xnb

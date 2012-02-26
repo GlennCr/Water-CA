@@ -10,72 +10,90 @@ namespace ca_water_prototype
 	//Rules are evaluted on cells at regular discrete time intervals (i.e. every 50ms)
 	
 	public enum CellState
-	{
+	{	//enumerated so that we can also use boolean logic if desired.
 		Null=0, Wall = 1, Empty = 2, Water = 4, 
-		//insert additional states here.
-		Max //do not add anything after max.
+		//insert additional states above this comment only..
+		Max //do not add anything after max. (nothing should be higher than max)
 	};
 
 	/// <summary>
 	/// Cells in this prototype have three states: Wall, Water, Empty.
 	/// 
-	/// Volume: sybte value representing the percent amount of the square which is full. Valid for 0 - 100.
-	/// When it's a Wall or it's Empty, Volume is always 0.
+	/// Mass: sybte value representing the percent amount of the square which is full. Valid for 0 - 100.
+	/// When it's a Wall or it's Empty, Mass is always 0.
 	/// 
 	/// </summary>
 	public struct Cell
 	{
-		
-		public int x, y, gained_volume;
-		public int _state, _volume;
+		//In the future, set values to something smaller to reduce footprint of arrays of cells. e.g. mass might fit better in a byte. Or use same INT for future_mass and current_mass, but use shifting and bool ops to divvy the variable up.
+		public bool is_fillable;
+		public int x, y, future_mass;
+		private int _state, _mass;
 		public int state
 		{
 			get	{ return _state;}
 			set 
 			{	//state must be a valid enumeration of State.
 				if ( value > (int)CellState.Max )
-				{ this._state = (int)CellState.Max - 1; }
+				{ this._state = (int)CellState.Max / 2; }
 				else if ( value < (int)CellState.Null ) 
 				{ this._state = (int)CellState.Null; }
 				else 
 				{ this._state = value; }
 
 				if ( _state != (int)CellState.Water)
-				{ this._volume = 0; } //if set to empty, volume is zero.
+				{ this._mass = 0; } //if set to empty or wall, mass is zero.
+
+				if ((_state & 
+					((int)CellState.Wall | (int)CellState.Null | (int)CellState.Max)) >  0)
+				{ is_fillable = false; }
+				else
+				{ is_fillable = true; }
 			}
 
 		}
 
-		public int volume
+		public int mass
 		{
 			get 
 			{
-				return _volume;
+				return _mass;
 			}
 			set
-			{	//ensure the volume value is always [0,100]
-				if ( value > App_Const.Max_Volume )
-				{ _volume = App_Const.Max_Volume; }
-				else if ( value < 0 )
-				{ _volume = 0; }
+			{	//ensure the mass value is always valid and culled if needed. If mass is < 2, it's set to 0.
+				if ( value < 2 )
+				{ _mass = 0; }
 				else
-				{ _volume = value; }
+				{ _mass = value; }
 
-				if ( _volume == 0 )
-				{ _state = (int)CellState.Empty; } //If volume is zero, cell is state Empty.
+				if ( _mass < 2 )
+				{ _state = (int)CellState.Empty; } //If mass is zero, cell is state Empty.
 				else
 				{ _state = (int)CellState.Water; }
 			}
 
 		}
 
-		public Cell ( int px, int py, int pstate = 0, int pvolume = 0, int pgainvol = 0 )
+		public Cell ( int px = 0, int py = 0, int pstate = 0, int pmass = 0, bool fillable = true, int pgainvol = 0 )
 		{
 			x = px;
 			y = py;
 			_state = pstate;
-			_volume = pvolume;
-			gained_volume = pgainvol;
+			_mass = pmass;
+			future_mass = pgainvol;
+			is_fillable = fillable;
+		}
+
+		public String StateToString ( )
+		{
+			switch (_state)
+			{
+				case (int)CellState.Empty: return "Empty";
+				case (int)CellState.Wall: return "Wall";
+				case (int)CellState.Water: return String.Format("Water: {0} %", (_mass / 100) );
+
+				default: return "NULL";	
+			}
 		}
 
 	}
