@@ -1,2 +1,0 @@
-c:\users\glenn\documents\visual studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\ResolveAssemblyReference.cache
