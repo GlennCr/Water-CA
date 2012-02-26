@@ -42,10 +42,9 @@ namespace ca_water_prototype
 				{ this._state = value; }
 
 				if ( _state != (int)CellState.Water)
-				{ this._mass = 0; } //if set to empty or wall, mass is zero.
+				{ this._mass = 0; this.future_mass = 0; } //if set to empty or wall, mass is zero.
 
-				if ((_state & 
-					((int)CellState.Wall | (int)CellState.Null | (int)CellState.Max)) >  0)
+				if ( (_state & ( (int)CellState.Wall | (int)CellState.Null)) > 0)
 				{ is_fillable = false; }
 				else
 				{ is_fillable = true; }
@@ -61,17 +60,24 @@ namespace ca_water_prototype
 			}
 			set
 			{	//ensure the mass value is always valid and culled if needed. If mass is < 2, it's set to 0.
-				if ( value < 2 )
+				if ( value < 4 )
 				{ _mass = 0; }
 				else
 				{ _mass = value; }
 
-				if ( _mass < 2 )
+				if ( _mass < 4 )
 				{ _state = (int)CellState.Empty; } //If mass is zero, cell is state Empty.
-				else
+				else if(is_fillable)
 				{ _state = (int)CellState.Water; }
+
+				future_mass = _mass;
 			}
 
+		}
+
+		public void UpdateMass()
+		{
+			mass = future_mass;
 		}
 
 		public Cell ( int px = 0, int py = 0, int pstate = 0, int pmass = 0, bool fillable = true, int pgainvol = 0 )
@@ -90,7 +96,7 @@ namespace ca_water_prototype
 			{
 				case (int)CellState.Empty: return "Empty";
 				case (int)CellState.Wall: return "Wall";
-				case (int)CellState.Water: return String.Format("Water: {0} %", (_mass / 100) );
+				case (int)CellState.Water: return String.Format("{0}", (_mass));
 
 				default: return "NULL";	
 			}

@@ -15,7 +15,7 @@ namespace ca_water_prototype
     public static class App_Const
     {
 		public const int Max_Mass = 1000;		//anything over this value is subject to compression checks
-		public const int Min_Mass = 2;			//anything under this val is culled	
+		public const int Min_Mass = 1;			//anything under this val is culled	
     }
 
     /// <summary>
@@ -30,14 +30,18 @@ namespace ca_water_prototype
     public class Game1 : Microsoft.Xna.Framework.Game
 	{
 		#region Constants
-		//amount which a cell can increase by under compression per number of blocks above it.		
-		public const Double Compress_Rate = 0.02;	//rate 
+		//amount which a cell can increase by under compression per number of blocks above it.
+		public const int MaxDelta = (int)App_Const.Max_Mass / 3;
+		public const Double Compress_Rate = 0.02;	//rate
+		public const int MaxCompress = (int)(App_Const.Max_Mass * Compress_Rate); 
 		public const int Cell_Size = 64;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
 		public const int Cell_OffsetY = 32;		//Y offset of the grid.
 		public const int Cell_Columns = 6;		//determines the height of the map aswell.
 		public const int Cell_Rows = 6;			//determines the width of the map aswell.
 		
+		public const Double mass_to_height = (Cell_Size / (Double)App_Const.Max_Mass); //cell mass to heigh conversion table/array
+
 		public const Double Water_ClockRate = 700; //evalutate cells every XXXXms.
 		
 		#endregion
@@ -57,12 +61,12 @@ namespace ca_water_prototype
 
 		#region Water CA Variables
 		Cell[,] cells;
-        int[] cell_vol_to_height; //cell mass to heigh conversion table/array
 		
 		int field_width;
 		int field_height;
 		
 		double water_clock;
+		int has_drawn;
 		#endregion
 
 		public Game1()
@@ -85,12 +89,14 @@ namespace ca_water_prototype
         {
             base.Initialize();
 
-            last_kboardstate = Keyboard.GetState();
+            last_kboardstate = Keyboard.GetState( );
+			last_mousestate = Mouse.GetState( );
 
 			#region Water CA Initialization
 			//set number of columns, how many cells per columns, and the dimensions of the cells. 
 			//Field dimensions are derived based on these values. field_dim = cell_count * cell_dim
             water_clock = 0;
+			has_drawn = 0;
 
 			if ( Cell_Columns < 3 || Cell_Rows < 3 ) //ensure a valid grid is provided
 			{
@@ -119,15 +125,6 @@ namespace ca_water_prototype
 			//cells[0, 2].mass = 255;
 			cells[Cell_Rows - 1, Cell_Columns - 1].state = (int)CellState.Wall;
 			cells[Cell_Rows - 1, 0].state=(int)CellState.Wall;
-
-
-			//precalculate height of mass percents to height in pixels. 
-			//Ensures height levels are always same for a given mass accross all cells.
-			cell_vol_to_height = new int[App_Const.Max_Mass + 1];
-			for(int i = 0; i < App_Const.Max_Mass + 1; i++)
-			{
-				cell_vol_to_height[i] = (int)( Cell_Size * ( i / App_Const.Max_Mass) );
-			}
 			#endregion
 
 
@@ -171,12 +168,33 @@ namespace ca_water_prototype
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||  kboardstate.IsKeyDown(Keys.Escape))
                 this.Exit();
 
-			water_clock += gameTime.ElapsedGameTime.TotalMilliseconds;
-			if ( water_clock > Water_ClockRate )
+			if (mousestate.LeftButton == ButtonState.Pressed)
 			{
-                water_clock -= Water_ClockRate;
+				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
+				if (OnGrid( gridpos.X, gridpos.Y ))
+				{
+					cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Water;
+					cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 1000;
+				}
+			}
+
+			if (mousestate.RightButton == ButtonState.Pressed)
+			{
+				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
+				if (OnGrid( gridpos.X, gridpos.Y ))
+				{
+					cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 0;
+					cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Wall;
+				}
+			}
+				
+			if (has_drawn > 4 )
+			{
+				water_clock -= Water_ClockRate;
 				RunCellRules( );
 				ResolveCellMasss( );
+				
+				has_drawn = 0;
 			}
 			
 			last_kboardstate = kboardstate;
@@ -198,15 +216,21 @@ namespace ca_water_prototype
 			spriteBatch.Begin( );
 			Vector2 snapPos = GridPosition( last_mousestate.X, last_mousestate.Y ); //snap cursor to grid
 			bool isongrid = OnGrid( snapPos.X, snapPos.Y );
-			String output = String.Format("( {0},{1})\n" 
-							+"C [{2}:{3}]\n",snapPos.X, snapPos.Y,Math.Floor(snapPos.Y / Cell_Size),Math.Floor(snapPos.X / Cell_Size));
-
-			spriteBatch.DrawString(sf_segoe, output, new Vector2(snapPos.X + 3, snapPos.Y - 15), Color.White);
+			
 			if (isongrid)
-			{ spriteBatch.Draw( tex2d_grid, snapPos, new Rectangle( 0, 0, Cell_Size, Cell_Size ), Color.Wheat ); }
+			{
+				String output = String.Format("( {0},{1})\n" 
+							+"C [{2}:{3}]\n{4}"
+							,snapPos.X, snapPos.Y,
+							Math.Floor(snapPos.Y / Cell_Size),Math.Floor(snapPos.X / Cell_Size), cells[(int)(snapPos.Y / Cell_Size),
+							(int)(snapPos.X / Cell_Size)].StateToString());
+				spriteBatch.DrawString(sf_segoe, output, new Vector2(snapPos.X + 3, snapPos.Y - 15), Color.White);
+				spriteBatch.Draw( tex2d_grid, snapPos, new Rectangle( 0, 0, Cell_Size, Cell_Size ), Color.Wheat );
+			}
 
 			spriteBatch.End( );
 
+			has_drawn++;
             base.Draw(gameTime);
         }
 
@@ -226,15 +250,19 @@ namespace ca_water_prototype
 					acell = cells[row, col];
 					rec_x = acell.x;
 					rec_y = acell.y;
-					scale = Cell_Size; 
+					scale = Cell_Size;
+					
 					switch ( acell.state )
 					{
 						case (int)CellState.Water:
-							rec_y = rec_y + scale - cell_vol_to_height[acell.mass];
-							rec_height = cell_vol_to_height[acell.mass];
+							int cell_height = (acell.mass > 1000) ? (int)(App_Const.Max_Mass * mass_to_height) : (int)(acell.mass * mass_to_height);
+							
+							rec_y = rec_y + scale - cell_height;
 							spriteBatch.Draw(	pixel_water,
-												new Rectangle( rec_x, rec_y, scale, rec_height ), 
+												new Rectangle( rec_x, rec_y, scale, cell_height ), 
 												Color.White );
+							spriteBatch.DrawString(sf_segoe, acell.StateToString( ),
+								new Vector2(acell.x + 10, acell.y + 25), Color.White);
 							break;
 						case (int)CellState.Wall:
 							spriteBatch.Draw(	tex2d_wall,
@@ -276,8 +304,7 @@ namespace ca_water_prototype
 		{	//moves 'gained mass' to current mass.
 			int total_vol = 0;
 			for ( int row = 0; row < Cell_Rows; row++ )
-			{
-				for ( int col = 0; col < Cell_Columns; col++ )
+			{	for ( int col = 0; col < Cell_Columns; col++ )
 				{
 					if ( ( cells[row, col].state & ( (int)CellState.Water | (int)CellState.Empty ) ) > 0 )
 					{
@@ -294,23 +321,148 @@ namespace ca_water_prototype
 		public void RunCellRules ()
 		{
 			//possible future improvement: have water 'schedule' to move, and resolve these mass changes post rule eval.
-			int neighbor_mass;
 			for ( int row = 0; row < Cell_Rows; row++ )
-			{
-				for ( int col = 0; col < Cell_Columns; col++ )
+			{	for ( int col = 0; col < Cell_Columns; col++ )
 				{	//evaluate neighbors from bottom to left to right
 					//water leaving the map is deleted
 					if (cells[row, col].is_fillable)
 					{
+						int deltaMass = 0;
+						int remainingMass = cells[row, col].mass;
+						int deltaUpperBound = 0; //when determining the deltaMass to move around, we may want to bound it to a max delta.
+
+						if (remainingMass <= 1) { continue; }
+
+						//consider block below (if it exists)
+						if (row < Cell_Rows-1 && cells[row+1, col].is_fillable)
+						{	//mass we can move to bottom. We subtract the mass of the bottom cell to avoid over fill.
+							deltaMass = CompressibleMass( remainingMass + cells[row+1, col].mass ) - cells[row+1, col].mass; 
+							//to smooth things out, we won't move it ALL at once.
+							if (deltaMass > App_Const.Min_Mass) {deltaMass /= 2; } //(right shift to) divide by 2.
+							//make sure a cell never moves more mass than it has, or move mass down faster than it can.
+							// (0 <= deltaMass <= deltaUpperBound)
+							deltaUpperBound = Math.Min(MaxDelta, remainingMass); 
+							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < deltaUpperBound) ? deltaMass : deltaUpperBound;
+
+							cells[row, col].future_mass -= deltaMass;
+							cells[row+1, col].future_mass += deltaMass;
+							remainingMass -= deltaMass;
+
+						} else if (row == Cell_Rows-1)
+						{	//if cell is against the edge of map, it loses mass to 'the void'
+							deltaMass = cells[row, col].mass / 2;
+							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; }
+							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
+							cells[row, col].future_mass -= deltaMass;
+							remainingMass -= deltaMass;
+						}
+
+						if (remainingMass <= 1) { continue; }
+
+						//consider the left neighbor (if it exists)
+						if (col > 0 && cells[row, col-1].is_fillable)
+						{	//mass we can move to left. We subtract the mass of the bottom cell to avoid over fill.
+							deltaMass = (cells[row, col].mass - cells[row, col-1].mass) / 4; //(right shift twice to) divide by 4.
+							//to smooth things out, we won't move it ALL at once.
+							if (deltaMass > App_Const.Min_Mass) {deltaMass /= 2; } //(right shift to) divide by 2.
+							//make sure a cell never moves more mass than it has.
+							// (0 <= deltaMass <= remainingMass)
+							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
+
+							cells[row, col].future_mass -= deltaMass;
+							cells[row, col-1].future_mass += deltaMass;
+							remainingMass -= deltaMass;
+
+						} else if (col == 0)
+						{ //if cell is against the edge of map, it loses mass to 'the void'
+							deltaMass = cells[row, col].mass / 4;
+							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; }
+							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
+							cells[row, col].future_mass -= deltaMass;
+							remainingMass -= deltaMass;
+						}
+
+						if (remainingMass <= 1) { continue; }
+
+						//consider the right neighbor (if it exists)
+						if (col < Cell_Columns-1 && cells[row, col+1].is_fillable)
+						{
+							deltaMass = (cells[row, col].mass - cells[row, col+1].mass) / 4; //(right shift twice to) divide by 4.
+							//to smooth things out, we won't move it ALL at once.
+							if (deltaMass > App_Const.Min_Mass) {deltaMass /= 2; } //(right shift to) divide by 2.
+							//make sure a cell never moves more mass than it has.
+							//(0 <= deltaMass <= remainingMass)
+							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
+
+							cells[row, col].future_mass -= deltaMass;
+							cells[row, col+1].future_mass += deltaMass;
+							remainingMass -= deltaMass;
+
+						} else if (col == Cell_Columns-1)
+						{ //if cell is against the edge of map, it loses mass to 'the void'
+							deltaMass = cells[row, col].mass >> 2;
+							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; }
+							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
+							cells[row, col].future_mass -= deltaMass;
+							remainingMass -= deltaMass;
+						}
+
+						if (remainingMass <= 1) { continue; }
+
+						//consider cell above us (if it exists) Cell only adds to above cell if it has compressed mass)
+						if (row > 0 && cells[row-1, col].is_fillable)
+						{
+							deltaMass = remainingMass - CompressibleMass( remainingMass + cells[row-1, col].mass );
+							//to smooth things out, we won't move it ALL at once.
+							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; } //(right shift to) divide by 2.
+							//make sure a cell never moves more mass than it has, or move mass down faster than it can.
+							// (0 <= deltaMass <= deltaUpperBound)
+							deltaUpperBound = Math.Min( MaxDelta, remainingMass );
+							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < deltaUpperBound) ? deltaMass : deltaUpperBound;
+
+							cells[row, col].future_mass -= deltaMass;
+							cells[row-1, col].future_mass += deltaMass;
+							remainingMass -= deltaMass;
+
+						}
+						
 					}
 				}
 			}
 
 			//set masses to future mass
+			for (int row = 0; row < Cell_Rows; row++)
+			{	for (int col = 0; col < Cell_Columns; col++)
+				{
+					if(cells[row,col].is_fillable)
+						cells[row, col].UpdateMass( );
+				}
+			}
 
 		}
 
+		public int CompressibleMass ( int totalMass) //simulating Compressible portion of Navier-Stokes equations.
+		{
+			if (totalMass <= 1000) { return 1000; }
+
+			if (totalMass < (App_Const.Max_Mass * 2) + MaxCompress)
+			{ 
+				return (App_Const.Max_Mass * App_Const.Max_Mass + totalMass*MaxCompress)/(App_Const.Max_Mass + MaxCompress); 
+				//return (App_Const.Max_Mass / MaxCompress) + (totalMass / App_Const.Max_Mass); 
+			}
+
+			return (totalMass + MaxCompress) / 2 ;
+		}
+
 		public Vector2 GridPosition ( int x, int y )
+		{	//spits out a position on the grid, with grid offset. 
+			int xout = (int)Math.Floor( x / (double)Cell_Size ) * Cell_Size + Cell_OffsetX;
+			int yout = (int)Math.Floor( y / (double)Cell_Size ) * Cell_Size + Cell_OffsetY;
+
+			return new Vector2( xout, yout );
+		}
+
+		public Vector2 GridPosition ( float x, float y )
 		{	//spits out a position on the grid, with grid offset. 
 			int xout = (int)Math.Floor( x / (double)Cell_Size ) * Cell_Size + Cell_OffsetX;
 			int yout = (int)Math.Floor( y / (double)Cell_Size ) * Cell_Size + Cell_OffsetY;
