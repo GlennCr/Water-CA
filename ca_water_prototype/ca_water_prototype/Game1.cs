@@ -31,14 +31,14 @@ namespace ca_water_prototype
 	{
 		#region Constants
 		//amount which a cell can increase by under compression per number of blocks above it.
-		public const int MaxDelta = (int)App_Const.Max_Mass / 3;
+		public const int MaxDelta = (int)(App_Const.Max_Mass * .8f);
 		public const Double Compress_Rate = 0.02;	//rate
 		public const int MaxCompress = (int)(App_Const.Max_Mass * Compress_Rate); 
 		public const int Cell_Size = 32;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
 		public const int Cell_OffsetY = 32;		//Y offset of the grid.
-		public const int Cell_Columns = 6;		//determines the height of the map aswell.
-		public const int Cell_Rows = 6;			//determines the width of the map aswell.
+		public const int Cell_Columns = 12;		//determines the height of the map aswell.
+		public const int Cell_Rows = 12;			//determines the width of the map aswell.
 		
 		public const Double mass_to_height = (Cell_Size / (Double)App_Const.Max_Mass); //cell mass to heigh conversion table/array
 
@@ -174,7 +174,7 @@ namespace ca_water_prototype
 				if (OnGrid( gridpos.X, gridpos.Y ))
 				{
 					int cellindy = GetCellInd(gridpos.Y, Cell_Rows, Cell_OffsetY);
-					int cellindx = GetCellInd(gridpos.Y, Cell_Columns, Cell_OffsetX);
+					int cellindx = GetCellInd(gridpos.X, Cell_Columns, Cell_OffsetX);
 					if (kboardstate.IsKeyDown( Keys.LeftShift ))
 					{
 						cells[cellindy, cellindx].mass = 0;
@@ -194,7 +194,7 @@ namespace ca_water_prototype
 				if (OnGrid( gridpos.X, gridpos.Y ))
 				{
 					int cellindy = GetCellInd(gridpos.Y, Cell_Rows, Cell_OffsetY);
-					int cellindx = GetCellInd(gridpos.Y, Cell_Columns, Cell_OffsetX);
+					int cellindx = GetCellInd(gridpos.X, Cell_Columns, Cell_OffsetX);
 					if (kboardstate.IsKeyDown( Keys.LeftShift ))
 					{
 						cells[cellindy, cellindx].mass = 0;
@@ -208,7 +208,7 @@ namespace ca_water_prototype
 				}
 			}
 				
-			if (has_drawn > 4 )
+			if (has_drawn > 1 )
 			{
 				water_clock -= Water_ClockRate;
 				RunCellRules( );
@@ -285,7 +285,7 @@ namespace ca_water_prototype
 												new Rectangle( rec_x, rec_y, scale, cell_height ), 
 												Color.White );
 							spriteBatch.DrawString(sf_segoe, acell.StateToString( ),
-								new Vector2(acell.x + 10, acell.y + 25), Color.White);
+								new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.White);
 							break;
 						case (int)CellState.Wall:
 							spriteBatch.Draw(	tex2d_wall,
