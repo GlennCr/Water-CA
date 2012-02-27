@@ -34,7 +34,7 @@ namespace ca_water_prototype
 		public const int MaxDelta = (int)App_Const.Max_Mass / 3;
 		public const Double Compress_Rate = 0.02;	//rate
 		public const int MaxCompress = (int)(App_Const.Max_Mass * Compress_Rate); 
-		public const int Cell_Size = 64;		//in pixels
+		public const int Cell_Size = 32;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
 		public const int Cell_OffsetY = 32;		//Y offset of the grid.
 		public const int Cell_Columns = 6;		//determines the height of the map aswell.
@@ -173,15 +173,17 @@ namespace ca_water_prototype
 				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
 				if (OnGrid( gridpos.X, gridpos.Y ))
 				{
+					int cellindy = GetCellInd(gridpos.Y, Cell_Rows, Cell_OffsetY);
+					int cellindx = GetCellInd(gridpos.Y, Cell_Columns, Cell_OffsetX);
 					if (kboardstate.IsKeyDown( Keys.LeftShift ))
 					{
-						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 0;
-						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Empty;
+						cells[cellindy, cellindx].mass = 0;
+						cells[cellindy, cellindx].state = (int)CellState.Empty;
 					}
 					else
 					{
-						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Water;
-						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 1000;
+						cells[cellindy, cellindx].state = (int)CellState.Water;
+						cells[cellindy, cellindx].mass = 1000;
 					}
 				}
 			}
@@ -191,15 +193,17 @@ namespace ca_water_prototype
 				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
 				if (OnGrid( gridpos.X, gridpos.Y ))
 				{
+					int cellindy = GetCellInd(gridpos.Y, Cell_Rows, Cell_OffsetY);
+					int cellindx = GetCellInd(gridpos.Y, Cell_Columns, Cell_OffsetX);
 					if (kboardstate.IsKeyDown( Keys.LeftShift ))
 					{
-						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 0;
-						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Empty;
+						cells[cellindy, cellindx].mass = 0;
+						cells[cellindy, cellindx].state = (int)CellState.Empty;
 					}
 					else
 					{
-						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].mass = 0;
-						cells[(int)gridpos.Y/Cell_Size, (int)gridpos.X/Cell_Size].state = (int)CellState.Wall;
+						cells[cellindy, cellindx].mass = 0;
+						cells[cellindy, cellindx].state = (int)CellState.Wall;
 					}
 				}
 			}
@@ -235,11 +239,14 @@ namespace ca_water_prototype
 			
 			if (isongrid)
 			{
+				int cellindrow= GetCellInd(snapPos.Y, Cell_Rows, Cell_OffsetY);
+				int cellindcol= GetCellInd(snapPos.X, Cell_Columns, Cell_OffsetX );
 				String output = String.Format("( {0},{1})\n" 
 							+"C [{2}:{3}]\n{4}"
 							,snapPos.X, snapPos.Y,
-							Math.Floor(snapPos.Y / Cell_Size),Math.Floor(snapPos.X / Cell_Size), cells[(int)(snapPos.Y / Cell_Size),
-							(int)(snapPos.X / Cell_Size)].StateToString());
+							(int)( ( (snapPos.Y - Cell_OffsetY) / Cell_Size) % Cell_Rows),
+							(int)( ( (snapPos.X - Cell_OffsetX) / Cell_Size) % Cell_Columns),
+							cells[ cellindrow, cellindcol].StateToString());
 				spriteBatch.DrawString(sf_segoe, output, new Vector2(snapPos.X + 3, snapPos.Y - 15), Color.White);
 				spriteBatch.Draw( tex2d_grid, snapPos, new Rectangle( 0, 0, Cell_Size, Cell_Size ), Color.Wheat );
 			}
@@ -489,22 +496,35 @@ namespace ca_water_prototype
 			return new Vector2( xout, yout );
 		}
 
-		public bool OnGrid ( int x, int y )
-		{	//checks if the position given is on the grid.
-			if (x < Cell_OffsetX || x > (Cell_Columns * Cell_Size + Cell_OffsetX))
-			{
-				return false;
-			}
-
-			if (y < Cell_OffsetY || y > (Cell_Rows * Cell_Size + Cell_OffsetY))
-			{
-				return false;
-			}
-
-			return true;
+		/// <summary>
+		/// Returns the Cell located on the (row/col). Giving Y and Row values gives you location on Row. X and Column gives location on Column
+		/// </summary>
+		/// <param name="pos"></param>
+		/// <param name="divs"></param>
+		/// <returns></returns>
+		public int GetCellInd ( int pos, int divs, int offset=0 )
+		{			
+			return (int)((pos - offset) / Cell_Size) % divs;
 		}
 
-		public bool OnGrid ( float x, float y )
+		/// <summary>
+		/// Returns the Cell located on the (row/col). Giving Y and Row values gives you location on Row. X and Column gives location on Column
+		/// </summary>
+		/// <param name="pos"></param>
+		/// <param name="divs"></param>
+		/// <returns></returns>
+		public int GetCellInd ( float pos, int divs, int offset=0 )
+		{			
+			return (int)(((int)pos - offset) / Cell_Size) % divs;
+		}
+
+		/// <summary>
+		/// Returns true if the location provided is on the 'grid'
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public bool OnGrid ( int x, int y )
 		{	//checks if the position given is on the grid.
 			if (x < Cell_OffsetX || x >= (Cell_Columns * Cell_Size + Cell_OffsetX))
 			{
@@ -512,6 +532,27 @@ namespace ca_water_prototype
 			}
 
 			if (y < Cell_OffsetY || y >= (Cell_Rows * Cell_Size + Cell_OffsetY))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Returns true if the location provided is on the 'grid'
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
+		public bool OnGrid ( float x, float y )
+		{	//checks if the position given is on the grid.
+			if (x < Cell_OffsetX || (int)x >= (Cell_Columns * Cell_Size + Cell_OffsetX))
+			{
+				return false;
+			}
+
+			if (y < Cell_OffsetY || (int)y >= (Cell_Rows * Cell_Size + Cell_OffsetY))
 			{
 				return false;
 			}
