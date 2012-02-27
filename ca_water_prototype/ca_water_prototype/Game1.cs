@@ -15,7 +15,7 @@ namespace ca_water_prototype
     public static class App_Const
     {
 		public const int Max_Mass = 1000;		//anything over this value is subject to compression checks
-		public const int Min_Mass = 1;			//anything under this val is culled	
+		public const int Min_Mass = 2;			//anything under this val is culled	
     }
 
     /// <summary>
@@ -30,19 +30,19 @@ namespace ca_water_prototype
     public class Game1 : Microsoft.Xna.Framework.Game
 	{
 		#region Constants
-		//amount which a cell can increase by under compression per number of blocks above it.
+		//amount which a cells mass can increase under compression per number of blocks above it.
 		public const int MinDelta = (int)(App_Const.Max_Mass * .5f);
-		public const Double Compress_Rate = 0.2;	//rate
+		public const Double Compress_Rate = 0.01;	//rate
 		public const int MaxCompress = (int)(App_Const.Max_Mass * Compress_Rate); 
 		public const int Cell_Size = 16;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
 		public const int Cell_OffsetY = 0;		//Y offset of the grid.
 		public const int Cell_Columns = 50;		//determines the height of the map aswell.
-		public const int Cell_Rows = 50;			//determines the width of the map aswell.
+		public const int Cell_Rows = 50;		//determines the width of the map aswell.
 		
 		public const Double mass_to_height = (Cell_Size / (Double)App_Const.Max_Mass); //cell mass to heigh conversion table/array
 
-		public const Double Water_ClockRate = .05; //evalutate cells every XXXXms.
+		public const Double Water_ClockRate = 10; //evalutate cells every XXXXms.
 		
 		#endregion
 
@@ -79,12 +79,6 @@ namespace ca_water_prototype
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
             base.Initialize();
@@ -130,10 +124,6 @@ namespace ca_water_prototype
 
 		}
 
-		/// <summary>
-		/// LoadContent will be called once per game and is the place to load
-		/// all of your content.
-		/// </summary>
 		protected override void LoadContent ( )
         {
             // Create a new SpriteBatch, which can be used to draw textures.
@@ -147,20 +137,12 @@ namespace ca_water_prototype
 			sf_segoe = Content.Load<SpriteFont>( "segoe" );
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+
         protected override void Update(GameTime gameTime)
         {
             KeyboardState kboardstate = Keyboard.GetState( );
@@ -169,8 +151,9 @@ namespace ca_water_prototype
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||  kboardstate.IsKeyDown(Keys.Escape))
                 this.Exit();
 
+			//holding shift and clicking will remove anything in the highlighted cell.
 			if (mousestate.RightButton == ButtonState.Pressed)
-			{
+			{	//when Right clicking, add blocks of water
 				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
 				if (OnGrid( gridpos.X, gridpos.Y ))
 				{
@@ -190,7 +173,7 @@ namespace ca_water_prototype
 			}
 
 			if (mousestate.LeftButton == ButtonState.Pressed)
-			{
+			{	//when left clicking, add walls.
 				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
 				if (OnGrid( gridpos.X, gridpos.Y ))
 				{
@@ -209,14 +192,14 @@ namespace ca_water_prototype
 				}
 			}
 
+			
 			water_clock += gameTime.ElapsedGameTime.Milliseconds;
+			//run as many times as needed to keep pace.
 			if (water_clock > Water_ClockRate)
 			{
 				water_clock -= Water_ClockRate;
 				RunCellRules( );
-				ResolveCellMasss( );
-				
-				has_drawn = 0;
+				CountMass( );
 			}
 			
 			last_kboardstate = kboardstate;
@@ -233,14 +216,15 @@ namespace ca_water_prototype
         {
             GraphicsDevice.Clear(Color.Black);
 
+			//draw the background
 			spriteBatch.Begin( );
-
 			spriteBatch.Draw( tex2d_bg, new Rectangle( 0, 0, 1000, 1000 ), Color.AliceBlue );
-
 			spriteBatch.End( );
 
 			DrawCells( spriteBatch );
 
+
+			//Draw cursor and debug text at the cursor.
 			spriteBatch.Begin( );
 			Vector2 snapPos = GridPosition( last_mousestate.X, last_mousestate.Y ); //snap cursor to grid
 			bool isongrid = OnGrid( snapPos.X, snapPos.Y );
@@ -264,11 +248,12 @@ namespace ca_water_prototype
         }
 
 		public void DrawCells (SpriteBatch sbatch)
-		{	//actual drawn cell is y-offset by (cell_y + mass). 
+		{	//actual drawn cell is y-offset by (cell_y + [a ratio of mass to height] ). 
 			//I do this because otherwise the cell appears 'upside down'
-			//for some reason rectangles height grows a rectangle down, not up.
+			//for some reason a rectangles height grows the rectangle down, not up.
 			Cell acell;
 			int rec_x, rec_y, scale; //position/dimension for rectangle to be drawn.
+			
 			//iterate through all cells and draw them.
 			spriteBatch.Begin( );
 
@@ -286,22 +271,21 @@ namespace ca_water_prototype
 						case (int)CellState.Water:
 							int cell_height = 0;
 							if( acell.mass > App_Const.Max_Mass || ( row > 0 && cells[row - 1, col].mass > 3))
-							{
+							{ //keep everything drawing within the bounds of a cell.
 								cell_height = Cell_Size;
 							}
 							else
 								cell_height = (int)(acell.mass * mass_to_height);
-							int depth_color = (int)MathHelper.Clamp(acell.mass * .2f, 20f, 150f);
-							int mass_alpha = (int)MathHelper.Clamp(acell.mass * .10f, 100, 200f);
 
-							depth_color = (int)MathHelper.Clamp((float)depth_color, 150f, 200f);
+							int depth_color = 0;//(int)MathHelper.Clamp(acell.mass * .1f, 0.005f, 50f); //change color based on depth. (NOT USED CURRENTLY)
+							int mass_alpha = (int)MathHelper.Clamp(acell.mass * .06f, 30, 70f); //change alpha based on depth.
 
 							rec_y = rec_y + scale - cell_height;
 							
 							spriteBatch.Draw( pixel_water, new Rectangle( rec_x, rec_y, scale, cell_height ), 
-												new Color(20, 80, 145,  mass_alpha) );
-							//spriteBatch.DrawString(sf_segoe, acell.StateToString( ) + "\n"
-							//						+ depth_color, new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.White);
+												new Color(20, 80, 145, 120 + mass_alpha) );
+							//uncommenting the below line causes the mass of a cell to be rendered as a string. use only if cells are 32x32 or larger!
+							//spriteBatch.DrawString(sf_segoe, acell.StateToString( ) + "\n" + depth_color, new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.Gray);
 							break;
 						case (int)CellState.Wall:
 							spriteBatch.Draw(	tex2d_wall,
@@ -339,7 +323,7 @@ namespace ca_water_prototype
 			return new Cell(); //some cell
 		}
 
-		public void ResolveCellMasss ( )
+		public void CountMass ( )
 		{	//moves 'gained mass' to current mass.
 			int total_vol = 0;
 			for ( int row = 0; row < Cell_Rows; row++ )
@@ -359,7 +343,7 @@ namespace ca_water_prototype
 
 		public void RunCellRules ()
 		{
-			//possible future improvement: have water 'schedule' to move, and resolve these mass changes post rule eval.
+			//possible future improvement: have water 'schedule' to move, and resolve these mass changes post rule eval. -- done
 			for ( int row = 0; row < Cell_Rows; row++ )
 			{	for ( int col = 0; col < Cell_Columns; col++ )
 				{	//evaluate neighbors from bottom to left to right
@@ -374,10 +358,10 @@ namespace ca_water_prototype
 
 						//consider block below (if it exists)
 						if (row < Cell_Rows-1 && cells[row+1, col].is_fillable)
-						{	//mass we can move to bottom. We subtract the mass of the bottom cell to avoid over fill.
+						{	//For mass we can move to bottom. We subtract the mass of the bottom cell to avoid over fill.
 							deltaMass = CompressibleMass( remainingMass + cells[row+1, col].mass ) - cells[row+1, col].mass; 
-							//to smooth things out, we won't move it ALL at once.
 							if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); } //if it's moving too fast, div by 2
+
 							//make sure a cell never moves more mass than it has, or move mass down faster than it can.
 							// (0 <= deltaMass <= deltaUpperBound)
 							deltaUpperBound = Math.Min(MinDelta, remainingMass); 
@@ -403,9 +387,9 @@ namespace ca_water_prototype
 
 						//consider the left neighbor (if it exists)
 						if (col > 0 && cells[row, col-1].is_fillable)
-						{	//mass we can move to left. We subtract the mass of the bottom cell to avoid over fill.
+						{	
 							deltaMass = (int)(cells[row, col].mass - cells[row, col-1].mass) / 4;
-							//to smooth things out, we won't move it ALL at once.
+
 							if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); }
 							//make sure a cell never moves more mass than it has.
 							// (0 <= deltaMass <= remainingMass)
@@ -430,7 +414,7 @@ namespace ca_water_prototype
 						if (col < Cell_Columns-1 && cells[row, col+1].is_fillable)
 						{
 							deltaMass = (int)(cells[row, col].mass - cells[row, col+1].mass) / 4 ;
-							//to smooth things out, we won't move it ALL at once.
+							
 							if (deltaMass > MinDelta) {deltaMass = (deltaMass / 2); } //if it's moving to fast, slow it down by half.
 							//make sure a cell never moves more mass than it has.
 							//(0 <= deltaMass <= remainingMass)
@@ -455,9 +439,9 @@ namespace ca_water_prototype
 						if (row > 0 && cells[row-1, col].is_fillable)
 						{
 							deltaMass = remainingMass - CompressibleMass( remainingMass + cells[row-1, col].mass );
-							//to smooth things out, we won't move it ALL at once.
+							
 							//if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); } //if it's moving to fast, slow it down by half.
-							//make sure a cell never moves more mass than it has, or move mass down faster than it can.
+							
 							// (0 <= deltaMass <= deltaUpperBound)
 							deltaUpperBound = Math.Min( MinDelta, remainingMass );
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < deltaUpperBound) ? deltaMass : deltaUpperBound;
