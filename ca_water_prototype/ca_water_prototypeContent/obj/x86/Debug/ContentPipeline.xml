@@ -8,7 +8,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\water.xnb</Output>
-      <Time>2012-02-26T16:51:16.7838125-07:00</Time>
+      <Time>2012-02-26T21:21:53.2926015-07:00</Time>
     </Item>
     <Item>
       <Source>error.png</Source>
@@ -26,7 +26,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\grid.xnb</Output>
-      <Time>2012-02-26T16:58:40.0201406-07:00</Time>
+      <Time>2012-02-26T20:24:55.7838125-07:00</Time>
     </Item>
     <Item>
       <Source>wall.png</Source>
@@ -44,7 +44,16 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\segoe.xnb</Output>
-      <Time>2012-02-26T16:58:40.0289297-07:00</Time>
+      <Time>2012-02-26T20:21:43.8814687-07:00</Time>
+    </Item>
+    <Item>
+      <Source>noisebg.png</Source>
+      <Name>noisebg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\noisebg.xnb</Output>
+      <Time>2012-02-26T21:24:04.2945547-07:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

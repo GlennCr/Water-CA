@@ -31,25 +31,25 @@ namespace ca_water_prototype
 	{
 		#region Constants
 		//amount which a cell can increase by under compression per number of blocks above it.
-		public const int MaxDelta = (int)(App_Const.Max_Mass * .8f);
-		public const Double Compress_Rate = 0.02;	//rate
+		public const int MinDelta = (int)(App_Const.Max_Mass * .5f);
+		public const Double Compress_Rate = 0.1;	//rate
 		public const int MaxCompress = (int)(App_Const.Max_Mass * Compress_Rate); 
-		public const int Cell_Size = 32;		//in pixels
+		public const int Cell_Size = 16;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
-		public const int Cell_OffsetY = 32;		//Y offset of the grid.
-		public const int Cell_Columns = 12;		//determines the height of the map aswell.
-		public const int Cell_Rows = 12;			//determines the width of the map aswell.
+		public const int Cell_OffsetY = 0;		//Y offset of the grid.
+		public const int Cell_Columns = 50;		//determines the height of the map aswell.
+		public const int Cell_Rows = 50;			//determines the width of the map aswell.
 		
 		public const Double mass_to_height = (Cell_Size / (Double)App_Const.Max_Mass); //cell mass to heigh conversion table/array
 
-		public const Double Water_ClockRate = 700; //evalutate cells every XXXXms.
+		public const Double Water_ClockRate = .05; //evalutate cells every XXXXms.
 		
 		#endregion
 
 		#region Graphics Variables
 		GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-		Texture2D pixel_water, pixel_error, tex2d_grid, tex2d_wall;
+		Texture2D pixel_water, pixel_error, tex2d_grid, tex2d_wall, tex2d_bg;
 		SpriteFont sf_segoe;
 		#endregion
 
@@ -138,11 +138,12 @@ namespace ca_water_prototype
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+			GraphicsDevice.BlendState = BlendState.Opaque;
             pixel_water = Content.Load<Texture2D>( "water" );
 			pixel_error = Content.Load<Texture2D>( "error" );
 			tex2d_wall = Content.Load<Texture2D>( "wall" );
 			tex2d_grid = Content.Load<Texture2D>( "grid" );
+			tex2d_bg = Content.Load<Texture2D>( "noisebg" );
 			sf_segoe = Content.Load<SpriteFont>( "segoe" );
         }
 
@@ -183,7 +184,7 @@ namespace ca_water_prototype
 					else
 					{
 						cells[cellindy, cellindx].state = (int)CellState.Water;
-						cells[cellindy, cellindx].mass = 1000;
+						cells[cellindy, cellindx].mass = App_Const.Max_Mass;
 					}
 				}
 			}
@@ -207,8 +208,9 @@ namespace ca_water_prototype
 					}
 				}
 			}
-				
-			if (has_drawn > 1 )
+
+			water_clock += gameTime.ElapsedGameTime.Milliseconds;
+			if (water_clock > Water_ClockRate)
 			{
 				water_clock -= Water_ClockRate;
 				RunCellRules( );
@@ -231,6 +233,12 @@ namespace ca_water_prototype
         {
             GraphicsDevice.Clear(Color.Black);
 
+			spriteBatch.Begin( );
+
+			spriteBatch.Draw( tex2d_bg, new Rectangle( 0, 0, 1000, 1000 ), Color.AliceBlue );
+
+			spriteBatch.End( );
+
 			DrawCells( spriteBatch );
 
 			spriteBatch.Begin( );
@@ -241,14 +249,12 @@ namespace ca_water_prototype
 			{
 				int cellindrow= GetCellInd(snapPos.Y, Cell_Rows, Cell_OffsetY);
 				int cellindcol= GetCellInd(snapPos.X, Cell_Columns, Cell_OffsetX );
-				String output = String.Format("( {0},{1})\n" 
-							+"C [{2}:{3}]\n{4}"
-							,snapPos.X, snapPos.Y,
-							(int)( ( (snapPos.Y - Cell_OffsetY) / Cell_Size) % Cell_Rows),
+				String output = String.Format("C [{0}:{1}-> {2}"
+							,(int)( ( (snapPos.Y - Cell_OffsetY) / Cell_Size) % Cell_Rows),
 							(int)( ( (snapPos.X - Cell_OffsetX) / Cell_Size) % Cell_Columns),
 							cells[ cellindrow, cellindcol].StateToString());
-				spriteBatch.DrawString(sf_segoe, output, new Vector2(snapPos.X + 3, snapPos.Y - 15), Color.White);
-				spriteBatch.Draw( tex2d_grid, snapPos, new Rectangle( 0, 0, Cell_Size, Cell_Size ), Color.Wheat );
+				spriteBatch.DrawString(sf_segoe, output, new Vector2(snapPos.X + 3, snapPos.Y - 15), Color.Black);
+				spriteBatch.Draw( tex2d_grid, snapPos, new Rectangle( 0, 0, Cell_Size, Cell_Size ), Color.White );
 			}
 
 			spriteBatch.End( );
@@ -262,7 +268,7 @@ namespace ca_water_prototype
 			//I do this because otherwise the cell appears 'upside down'
 			//for some reason rectangles height grows a rectangle down, not up.
 			Cell acell;
-			int rec_x, rec_y, rec_height, scale; //position/dimension for rectangle to be drawn.
+			int rec_x, rec_y, scale; //position/dimension for rectangle to be drawn.
 			//iterate through all cells and draw them.
 			spriteBatch.Begin( );
 
@@ -278,14 +284,24 @@ namespace ca_water_prototype
 					switch ( acell.state )
 					{
 						case (int)CellState.Water:
-							int cell_height = (acell.mass > 1000) ? (int)(App_Const.Max_Mass * mass_to_height) : (int)(acell.mass * mass_to_height);
-							
+							int cell_height = 0;
+							if( acell.mass > App_Const.Max_Mass || ( row > 0 && cells[row - 1, col].mass > 3))
+							{
+								cell_height = Cell_Size;
+							}
+							else
+								cell_height = (int)(acell.mass * mass_to_height);
+							int depth_color = (int)MathHelper.Clamp(acell.mass * .2f, 20f, 150f);
+							int mass_alpha = (int)MathHelper.Clamp(acell.mass * .10f, 100, 200f);
+
+							depth_color = (int)MathHelper.Clamp((float)depth_color, 150f, 200f);
+
 							rec_y = rec_y + scale - cell_height;
-							spriteBatch.Draw(	pixel_water,
-												new Rectangle( rec_x, rec_y, scale, cell_height ), 
-												Color.White );
-							spriteBatch.DrawString(sf_segoe, acell.StateToString( ),
-								new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.White);
+							
+							spriteBatch.Draw( pixel_water, new Rectangle( rec_x, rec_y, scale, cell_height ), 
+												new Color(20, 80, 145,  mass_alpha) );
+							//spriteBatch.DrawString(sf_segoe, acell.StateToString( ) + "\n"
+							//						+ depth_color, new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.White);
 							break;
 						case (int)CellState.Wall:
 							spriteBatch.Draw(	tex2d_wall,
@@ -361,10 +377,10 @@ namespace ca_water_prototype
 						{	//mass we can move to bottom. We subtract the mass of the bottom cell to avoid over fill.
 							deltaMass = CompressibleMass( remainingMass + cells[row+1, col].mass ) - cells[row+1, col].mass; 
 							//to smooth things out, we won't move it ALL at once.
-							if (deltaMass > App_Const.Min_Mass) {deltaMass /= 2; } //(right shift to) divide by 2.
+							if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); } //if it's moving too fast, div by 2
 							//make sure a cell never moves more mass than it has, or move mass down faster than it can.
 							// (0 <= deltaMass <= deltaUpperBound)
-							deltaUpperBound = Math.Min(MaxDelta, remainingMass); 
+							deltaUpperBound = Math.Min(MinDelta, remainingMass); 
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < deltaUpperBound) ? deltaMass : deltaUpperBound;
 
 							cells[row, col].future_mass -= deltaMass;
@@ -376,8 +392,8 @@ namespace ca_water_prototype
 
 						} else if (row == Cell_Rows-1)
 						{	//if cell is against the edge of map, it loses mass to 'the void'
-							deltaMass = CompressibleMass( remainingMass); 
-							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; }
+							deltaMass = CompressibleMass( remainingMass);
+							//if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); }
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
 							cells[row, col].future_mass -= deltaMass;
 							remainingMass -= deltaMass;
@@ -388,9 +404,9 @@ namespace ca_water_prototype
 						//consider the left neighbor (if it exists)
 						if (col > 0 && cells[row, col-1].is_fillable)
 						{	//mass we can move to left. We subtract the mass of the bottom cell to avoid over fill.
-							deltaMass = (cells[row, col].mass - cells[row, col-1].mass) / 4; //(right shift twice to) divide by 4.
+							deltaMass = (int)(cells[row, col].mass - cells[row, col-1].mass) / 4;
 							//to smooth things out, we won't move it ALL at once.
-							if (deltaMass > App_Const.Min_Mass) {deltaMass /= 2; } //(right shift to) divide by 2.
+							if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); }
 							//make sure a cell never moves more mass than it has.
 							// (0 <= deltaMass <= remainingMass)
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
@@ -401,8 +417,8 @@ namespace ca_water_prototype
 
 						} else if (col == 0)
 						{ //if cell is against the edge of map, it loses mass to 'the void'
-							deltaMass = cells[row, col].mass / 4;
-							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; }
+							deltaMass = cells[row, col].mass / 2;
+							if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); }
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
 							cells[row, col].future_mass -= deltaMass;
 							remainingMass -= deltaMass;
@@ -413,9 +429,9 @@ namespace ca_water_prototype
 						//consider the right neighbor (if it exists)
 						if (col < Cell_Columns-1 && cells[row, col+1].is_fillable)
 						{
-							deltaMass = (cells[row, col].mass - cells[row, col+1].mass) / 4; //(right shift twice to) divide by 4.
+							deltaMass = (int)(cells[row, col].mass - cells[row, col+1].mass) / 4 ;
 							//to smooth things out, we won't move it ALL at once.
-							if (deltaMass > App_Const.Min_Mass) {deltaMass /= 2; } //(right shift to) divide by 2.
+							if (deltaMass > MinDelta) {deltaMass = (deltaMass / 2); } //if it's moving to fast, slow it down by half.
 							//make sure a cell never moves more mass than it has.
 							//(0 <= deltaMass <= remainingMass)
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
@@ -426,8 +442,8 @@ namespace ca_water_prototype
 
 						} else if (col == Cell_Columns-1)
 						{ //if cell is against the edge of map, it loses mass to 'the void'
-							deltaMass = cells[row, col].mass >> 2;
-							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; }
+							deltaMass = cells[row, col].mass / 2;
+							if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); }
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
 							cells[row, col].future_mass -= deltaMass;
 							remainingMass -= deltaMass;
@@ -440,10 +456,10 @@ namespace ca_water_prototype
 						{
 							deltaMass = remainingMass - CompressibleMass( remainingMass + cells[row-1, col].mass );
 							//to smooth things out, we won't move it ALL at once.
-							if (deltaMass > App_Const.Min_Mass) { deltaMass /= 2; } //(right shift to) divide by 2.
+							//if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); } //if it's moving to fast, slow it down by half.
 							//make sure a cell never moves more mass than it has, or move mass down faster than it can.
 							// (0 <= deltaMass <= deltaUpperBound)
-							deltaUpperBound = Math.Min( MaxDelta, remainingMass );
+							deltaUpperBound = Math.Min( MinDelta, remainingMass );
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < deltaUpperBound) ? deltaMass : deltaUpperBound;
 
 							cells[row, col].future_mass -= deltaMass;
@@ -469,7 +485,7 @@ namespace ca_water_prototype
 
 		public int CompressibleMass ( int totalMass) //simulating Compressible portion of Navier-Stokes equations.
 		{
-			if (totalMass <= 1000) { return 1000; }
+			if (totalMass <= App_Const.Max_Mass) { return App_Const.Max_Mass; }
 
 			if (totalMass < (App_Const.Max_Mass * 2) + MaxCompress)
 			{ 

@@ -60,12 +60,12 @@ namespace ca_water_prototype
 			}
 			set
 			{	//ensure the mass value is always valid and culled if needed. If mass is < 2, it's set to 0.
-				if ( value < 4 )
+				if ( value < 3 )
 				{ _mass = 0; }
 				else
 				{ _mass = value; }
 
-				if ( _mass < 4 )
+				if ( _mass < 2 )
 				{ _state = (int)CellState.Empty; } //If mass is zero, cell is state Empty.
 				else if(is_fillable)
 				{ _state = (int)CellState.Water; }
@@ -96,7 +96,7 @@ namespace ca_water_prototype
 			{
 				case (int)CellState.Empty: return "Empty";
 				case (int)CellState.Wall: return "Wall";
-				case (int)CellState.Water: return String.Format("{0}", (_mass));
+				case (int)CellState.Water: return String.Format("{0}ml^2", (_mass));
 
 				default: return "NULL";	
 			}
