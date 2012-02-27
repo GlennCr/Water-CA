@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-Master Branch is a mess right now, still getting the hang of git. check out one of the other branches for now.
-=======
 Second attempt at a working Cellular Automata Water Sim.
 
 This article proved extremely helpful: http://w-shadow.com/blog/2009/09/01/simple-fluid-simulation/
@@ -17,4 +14,4 @@ It pushes the higher side 'down' and raises the lower side 'up' a little bit, th
 I'm thinking of implementing water pressure similar to how it was described here: http://www.gamasutra.com/view/feature/131954/interview_the_making_of_dwarf_.php?page=10
 
 Manually moving the water as it would be if water pressure worked DOES fix the disapearing volume (sort of, close enough for a game anyways)
->>>>>>> second
+
