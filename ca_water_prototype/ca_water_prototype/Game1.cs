@@ -32,7 +32,7 @@ namespace ca_water_prototype
 		#region Constants
 		//amount which a cell can increase by under compression per number of blocks above it.
 		public const int MinDelta = (int)(App_Const.Max_Mass * .5f);
-		public const Double Compress_Rate = 0.1;	//rate
+		public const Double Compress_Rate = 0.2;	//rate
 		public const int MaxCompress = (int)(App_Const.Max_Mass * Compress_Rate); 
 		public const int Cell_Size = 16;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
