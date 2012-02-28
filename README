@@ -1,12 +1,6 @@
-Second attempt at a working Cellular Automata Water Sim.
+Working on Water Pressure, and tweeking aspects of water flow (I really would like it to even itself out faster you see)
 
-This article proved extremely helpful: http://w-shadow.com/blog/2009/09/01/simple-fluid-simulation/
-
-Helped me get my rule updates in order, much better than it was before.
-
-Also implemented water compression based on what was shown in the article. I moved my implementation away from floating point though.
+I'm going to try and implement water pressure similar to how it was described here: http://www.gamasutra.com/view/feature/131954/interview_the_making_of_dwarf_.php?page=9
 
 
-One thing too note, that's odd about adding water compression: In situations where Water Pressure should take effect (i.e. water in a U-Pipe), compression alone does SORT of accomplish the thing. As it it were VERY low pressure...
-
-I'm thinking of implementing water pressure similar to how it was described here: http://www.gamasutra.com/view/feature/131954/interview_the_making_of_dwarf_.php?page=9
+Special thanks for Professor Farin for pointing out water does not compress! If anyone does use the w-shadow example as a basis for water CA (linked in first attempt) bear in mind that it won't accurately model water!
