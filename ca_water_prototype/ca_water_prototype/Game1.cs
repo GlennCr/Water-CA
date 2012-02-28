@@ -29,7 +29,7 @@ namespace ca_water_prototype
         public const int Min_Mass = Cell.Min_Mass;			//anything under this val is culled	
         
         public const int MinDelta = (int)(Max_Mass * .5f);
-		public const Double Compress_Rate = 0.02;	//rate we compress by
+		public const Double Compress_Rate = 0.00;	//rate we compress by
 		public const int MaxCompress = (int)(Max_Mass * Compress_Rate); 
 		public const int Cell_Size = 32;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
@@ -278,7 +278,7 @@ namespace ca_water_prototype
 							int mass_alpha = (int)MathHelper.Clamp(acell.mass*.03f + MathHelper.Clamp((acell.mass - Max_Mass)*.3f, 0f, 100f), 15, 100f); //change alpha based on depth.
 
 							rec_y = rec_y + scale - cell_height;
-							if(acell.mass > 150)
+							
 							spriteBatch.Draw( pixel_water, new Rectangle( rec_x, rec_y, scale, cell_height ), 
 												new Color(20, 80, 145, 90 + mass_alpha) );
 							//uncommenting the below line causes the mass of a cell to be rendered as a string. use only if cells are 32x32 or larger!
