@@ -12,12 +12,6 @@ using Microsoft.Xna.Framework.Media;
 namespace ca_water_prototype
 {
 
-    public static class App_Const
-    {
-		public const int Max_Mass = 1000;		//anything over this value is subject to compression checks
-		public const int Min_Mass = 2;			//anything under this val is culled	
-    }
-
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -31,16 +25,19 @@ namespace ca_water_prototype
 	{
 		#region Constants
 		//amount which a cells mass can increase under compression per number of blocks above it.
-		public const int MinDelta = (int)(App_Const.Max_Mass * .5f);
+        public const int Max_Mass = Cell.Max_Mass;  		//anything over this value is subject to compression checks
+        public const int Min_Mass = Cell.Min_Mass;			//anything under this val is culled	
+        
+        public const int MinDelta = (int)(Max_Mass * .5f);
 		public const Double Compress_Rate = 0.01;	//rate
-		public const int MaxCompress = (int)(App_Const.Max_Mass * Compress_Rate); 
+		public const int MaxCompress = (int)(Max_Mass * Compress_Rate); 
 		public const int Cell_Size = 16;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
 		public const int Cell_OffsetY = 0;		//Y offset of the grid.
 		public const int Cell_Columns = 50;		//determines the height of the map aswell.
 		public const int Cell_Rows = 50;		//determines the width of the map aswell.
 		
-		public const Double mass_to_height = (Cell_Size / (Double)App_Const.Max_Mass); //cell mass to heigh conversion table/array
+		public const Double mass_to_height = (Cell_Size / (Double)Max_Mass); //cell mass to heigh conversion table/array
 
 		public const Double Water_ClockRate = 10; //evalutate cells every XXXXms.
 		
@@ -112,10 +109,10 @@ namespace ca_water_prototype
 			//cells[1, 0].state = (int)CellState.Null;
 			//cells[2, 0].mass = 1;
 			//cells[3, 0].mass = 2;
-			cells[2, 1].mass = App_Const.Max_Mass;
+			cells[2, 1].mass = Max_Mass;
 			//cells[1, 1].mass = 50;
 			//cells[2, 1].mass = 75;
-			cells[2, 2].mass = App_Const.Max_Mass;
+			cells[2, 2].mass = Max_Mass;
 			//cells[0, 2].mass = 255;
 			cells[Cell_Rows - 1, Cell_Columns - 1].state = (int)CellState.Wall;
 			cells[Cell_Rows - 1, 0].state=(int)CellState.Wall;
@@ -167,7 +164,7 @@ namespace ca_water_prototype
 					else
 					{
 						cells[cellindy, cellindx].state = (int)CellState.Water;
-						cells[cellindy, cellindx].mass = App_Const.Max_Mass;
+						cells[cellindy, cellindx].mass = Max_Mass;
 					}
 				}
 			}
@@ -270,7 +267,7 @@ namespace ca_water_prototype
 					{
 						case (int)CellState.Water:
 							int cell_height = 0;
-							if( acell.mass > App_Const.Max_Mass || ( row > 0 && cells[row - 1, col].mass > 3))
+							if( acell.mass > Max_Mass || ( row > 0 && cells[row - 1, col].mass > 3))
 							{ //keep everything drawing within the bounds of a cell.
 								cell_height = Cell_Size;
 							}
@@ -469,12 +466,12 @@ namespace ca_water_prototype
 
 		public int CompressibleMass ( int totalMass) //simulating Compressible portion of Navier-Stokes equations.
 		{
-			if (totalMass <= App_Const.Max_Mass) { return App_Const.Max_Mass; }
+			if (totalMass <= Max_Mass) { return Max_Mass; }
 
-			if (totalMass < (App_Const.Max_Mass * 2) + MaxCompress)
+			if (totalMass < (Max_Mass * 2) + MaxCompress)
 			{ 
-				return (App_Const.Max_Mass * App_Const.Max_Mass + totalMass*MaxCompress)/(App_Const.Max_Mass + MaxCompress); 
-				//return (App_Const.Max_Mass / MaxCompress) + (totalMass / App_Const.Max_Mass); 
+				return (Max_Mass * Max_Mass + totalMass*MaxCompress)/(Max_Mass + MaxCompress); 
+				//return (Max_Mass / MaxCompress) + (totalMass / Max_Mass); 
 			}
 
 			return (totalMass + MaxCompress) / 2 ;

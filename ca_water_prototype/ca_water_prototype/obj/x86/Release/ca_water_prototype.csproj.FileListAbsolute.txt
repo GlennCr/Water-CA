@@ -29,3 +29,5 @@ C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\obj\x86\Re
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\obj\x86\Release\Microsoft.Xna.Framework.RuntimeProfile.txt
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\obj\x86\Release\ca_water_prototype.exe
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\obj\x86\Release\ca_water_prototype.pdb
+C:\Users\glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\segoe.spritefont
+C:\Users\glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\noisebg.png

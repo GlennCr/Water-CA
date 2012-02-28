@@ -26,7 +26,10 @@ namespace ca_water_prototype
 	public struct Cell
 	{
 		//In the future, set values to something smaller to reduce footprint of arrays of cells. e.g. mass might fit better in a byte. Or use same INT for future_mass and current_mass, but use shifting and bool ops to divvy the variable up.
-		public bool is_fillable;
+        public static const int Max_Mass = 1000;
+        public static const int Min_Mass = 2;
+        
+        public bool is_fillable;
 		public int x, y, future_mass;
 		private int _state, _mass;
 		public int state
@@ -60,12 +63,12 @@ namespace ca_water_prototype
 			}
 			set
 			{	//ensure the mass value is always valid and culled if needed. If mass is < 2, it's set to 0.
-				if ( value < App_Const.Min_Mass )
+				if ( value < Min_Mass )
 				{ _mass = 0; }
 				else
 				{ _mass = value; }
 
-				if ( _mass < App_Const.Min_Mass )
+				if ( _mass < Min_Mass )
 				{ _state = (int)CellState.Empty; } //If mass is zero, cell is state Empty.
 				else if(is_fillable)
 				{ _state = (int)CellState.Water; }
@@ -96,7 +99,7 @@ namespace ca_water_prototype
 			{
 				case (int)CellState.Empty: return "Empty";
 				case (int)CellState.Wall: return "Wall";
-				case (int)CellState.Water: return String.Format("{0}%", (int)(_mass * (100 / (double)App_Const.Max_Mass)) );
+				case (int)CellState.Water: return String.Format("{0}%", (int)(_mass * (100 / (double)Max_Mass)) );
 
 				default: return "NULL";	
 			}
