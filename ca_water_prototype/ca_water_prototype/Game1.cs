@@ -33,10 +33,10 @@ namespace ca_water_prototype
 		public const int MaxCompress = (int)(Max_Mass * Compress_Rate); 
 		public const int Cell_Size = 32;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
-		public const int Cell_OffsetY = 0;		//Y offset of the grid.
-		public const int Cell_Columns = 30;		//determines the height of the map aswell.
-		public const int Cell_Rows = 20;		//determines the width of the map aswell.
-		
+		public const int Cell_OffsetY = 24;		//Y offset of the grid.
+		public const int Cell_Columns = 32;		//determines the height of the map aswell.
+		public const int Cell_Rows = 18;		//determines the width of the map aswell.
+
 		public const Double mass_to_height = (Cell_Size / (Double)Max_Mass); //cell mass to heigh conversion table/array
 
 		public const Double Water_ClockRate = 10; //evalutate cells every XXXXms.
@@ -54,6 +54,7 @@ namespace ca_water_prototype
 		KeyboardState last_kboardstate;
 		MouseState last_mousestate;
 		Vector2 cursor_pos;
+        bool Is_Fullscreen;
 		#endregion
 
 		#region Water CA Variables
@@ -69,6 +70,8 @@ namespace ca_water_prototype
 		public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.IsFullScreen = false;
+            Is_Fullscreen = false;
 			field_width = Cell_Size * Cell_Columns + Cell_OffsetX;
 			field_height = Cell_Size * Cell_Rows + Cell_OffsetY;
 			graphics.PreferredBackBufferWidth = field_width;
@@ -147,6 +150,15 @@ namespace ca_water_prototype
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||  kboardstate.IsKeyDown(Keys.Escape))
                 this.Exit();
+
+            if (kboardstate.IsKeyDown(Keys.F) && last_kboardstate.IsKeyUp(Keys.F))
+            {
+                if (Is_Fullscreen) { Is_Fullscreen = false; }
+                else { Is_Fullscreen = true; }
+
+                graphics.IsFullScreen = Is_Fullscreen;
+                graphics.ApplyChanges();
+            }
 
 			//holding shift and clicking will remove anything in the highlighted cell.
 			if (mousestate.RightButton == ButtonState.Pressed)
@@ -267,20 +279,21 @@ namespace ca_water_prototype
 					{
 						case (int)CellState.Water:
 							int cell_height = 0;
-							if( acell.mass > Max_Mass || ( row > 0 && cells[row - 1, col].mass > Min_Mass * 10))
+							if( acell.mass > Max_Mass || ( row > 0 && cells[row - 1, col].mass > Min_Mass * 5))
 							{ //keep everything drawing within the bounds of a cell.
 								cell_height = Cell_Size;
 							}
 							else
 								cell_height = (int)(acell.mass * mass_to_height);
 
-							int depth_color = 0;//(int)MathHelper.Clamp(acell.mass * .1f, 0.005f, 50f); //change color based on depth. (NOT USED CURRENTLY)
-							int mass_alpha = (int)MathHelper.Clamp(acell.mass*.03f + MathHelper.Clamp((acell.mass - Max_Mass)*.3f, 0f, 100f), 15, 100f); //change alpha based on depth.
-
+							
 							rec_y = rec_y + scale - cell_height;
 							
+                            //have an alpha value in water to denote it's depth. Set this every update. (if cell above has alpha >1, add it to mine.)
+                            //use this to darken cells that are lower in depth.
+
 							spriteBatch.Draw( pixel_water, new Rectangle( rec_x, rec_y, scale, cell_height ), 
-												new Color(20, 80, 145, 90 + mass_alpha) );
+												new Color(20, 80, 145, 100) );
 							//uncommenting the below line causes the mass of a cell to be rendered as a string. use only if cells are 32x32 or larger!
 							//spriteBatch.DrawString(sf_segoe, acell.StateToString( ) + "\n" + depth_color, new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.Gray);
 							break;
@@ -356,7 +369,7 @@ namespace ca_water_prototype
 						//consider block below (if it exists)
 						if (row < Cell_Rows-1 && cells[row+1, col].is_fillable)
 						{	//For mass we can move to bottom. We subtract the mass of the bottom cell to avoid over fill.
-							deltaMass = CompressibleMass( remainingMass + cells[row+1, col].mass ) - cells[row+1, col].mass; 
+                            deltaMass = CompressibleMass(remainingMass + cells[row + 1, col].mass) - cells[row + 1, col].mass; 
 							if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); } //if it's moving too fast, div by 2
 
 							//make sure a cell never moves more mass than it has, or move mass down faster than it can.
@@ -368,12 +381,12 @@ namespace ca_water_prototype
 							cells[row+1, col].future_mass += deltaMass;
 							remainingMass -= deltaMass;
 
-							if (cells[row+1,col].state == (int)CellState.Empty || cells[row+1,col].mass < cells[row,col].mass)
-							{ continue; }
+							//if (cells[row+1,col].state == (int)CellState.Empty || cells[row+1,col].mass < cells[row,col].mass)
+							//{ continue; }
 
 						} else if (row == Cell_Rows-1)
 						{	//if cell is against the edge of map, it loses mass to 'the void'
-							deltaMass = CompressibleMass( remainingMass);
+							deltaMass = remainingMass / 2;
 							//if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); }
 							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < remainingMass) ? deltaMass : remainingMass;
 							cells[row, col].future_mass -= deltaMass;
@@ -421,7 +434,11 @@ namespace ca_water_prototype
 							cells[row, col+1].future_mass += deltaMass;
 							remainingMass -= deltaMass;
 
-						} else if (col == Cell_Columns-1)
+						}
+
+                        if (remainingMass < Min_Mass) { continue; }
+
+                        if (col == Cell_Columns-1 || col == 0 || row == Cell_Rows - 1)
 						{ //if cell is against the edge of map, it loses mass to 'the void'
 							deltaMass = cells[row, col].mass / 2;
 							if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); }
@@ -430,25 +447,21 @@ namespace ca_water_prototype
 							remainingMass -= deltaMass;
 						}
 
-						if (remainingMass < Min_Mass) { continue; }
+                        if (remainingMass < Min_Mass) { continue; }
 
-						//consider cell above us (if it exists) Cell only adds to above cell if it has compressed mass)
-						if (row > 0 && cells[row-1, col].is_fillable)
-						{
-							deltaMass = remainingMass - CompressibleMass( remainingMass + cells[row-1, col].mass );
-							
-							//if (deltaMass > MinDelta) { deltaMass = (deltaMass / 2); } //if it's moving to fast, slow it down by half.
-							
-							// (0 <= deltaMass <= deltaUpperBound)
-							deltaUpperBound = Math.Min( MinDelta, remainingMass );
-							deltaMass = (deltaMass < 0) ? 0 : (deltaMass < deltaUpperBound) ? deltaMass : deltaUpperBound;
+                        //if water became 'compressed', we uncompress it now.
+                        if (row > 0 && cells[row - 1, col].is_fillable)
+                        {
+                            deltaMass = remainingMass - CompressibleMass(remainingMass + cells[row - 1, col].mass);
+                            deltaUpperBound = Math.Min(MinDelta, remainingMass);
+                            deltaMass = (deltaMass < 0) ? 0 : (deltaMass < deltaUpperBound) ? deltaMass : deltaUpperBound;
 
-							cells[row, col].future_mass -= deltaMass;
-							cells[row-1, col].future_mass += deltaMass;
-							remainingMass -= deltaMass;
+                            cells[row, col].future_mass -= deltaMass;
+                            cells[row - 1, col].future_mass += deltaMass;
+                            remainingMass -= deltaMass;
 
-						}
-						
+                        }
+
 					}
 				}
 			}
