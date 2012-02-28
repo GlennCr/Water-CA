@@ -29,13 +29,13 @@ namespace ca_water_prototype
         public const int Min_Mass = Cell.Min_Mass;			//anything under this val is culled	
         
         public const int MinDelta = (int)(Max_Mass * .5f);
-		public const Double Compress_Rate = 0.01;	//rate
+		public const Double Compress_Rate = 0.02;	//rate we compress by
 		public const int MaxCompress = (int)(Max_Mass * Compress_Rate); 
-		public const int Cell_Size = 16;		//in pixels
+		public const int Cell_Size = 32;		//in pixels
         public const int Cell_OffsetX = 0;		//X offset of the grid.
 		public const int Cell_OffsetY = 0;		//Y offset of the grid.
-		public const int Cell_Columns = 50;		//determines the height of the map aswell.
-		public const int Cell_Rows = 50;		//determines the width of the map aswell.
+		public const int Cell_Columns = 30;		//determines the height of the map aswell.
+		public const int Cell_Rows = 20;		//determines the width of the map aswell.
 		
 		public const Double mass_to_height = (Cell_Size / (Double)Max_Mass); //cell mass to heigh conversion table/array
 
@@ -215,7 +215,7 @@ namespace ca_water_prototype
 
 			//draw the background
 			spriteBatch.Begin( );
-			spriteBatch.Draw( tex2d_bg, new Rectangle( 0, 0, 1000, 1000 ), Color.AliceBlue );
+			spriteBatch.Draw( tex2d_bg, new Rectangle( 0, 0, field_width, field_height ), Color.AliceBlue );
 			spriteBatch.End( );
 
 			DrawCells( spriteBatch );
@@ -267,7 +267,7 @@ namespace ca_water_prototype
 					{
 						case (int)CellState.Water:
 							int cell_height = 0;
-							if( acell.mass > Max_Mass || ( row > 0 && cells[row - 1, col].mass > 3))
+							if( acell.mass > Max_Mass || ( row > 0 && cells[row - 1, col].mass > Min_Mass * 10))
 							{ //keep everything drawing within the bounds of a cell.
 								cell_height = Cell_Size;
 							}
@@ -275,12 +275,12 @@ namespace ca_water_prototype
 								cell_height = (int)(acell.mass * mass_to_height);
 
 							int depth_color = 0;//(int)MathHelper.Clamp(acell.mass * .1f, 0.005f, 50f); //change color based on depth. (NOT USED CURRENTLY)
-							int mass_alpha = (int)MathHelper.Clamp(acell.mass * .06f, 30, 70f); //change alpha based on depth.
+							int mass_alpha = (int)MathHelper.Clamp(acell.mass*.03f + MathHelper.Clamp((acell.mass - Max_Mass)*.3f, 0f, 100f), 15, 100f); //change alpha based on depth.
 
 							rec_y = rec_y + scale - cell_height;
-							
+							if(acell.mass > 150)
 							spriteBatch.Draw( pixel_water, new Rectangle( rec_x, rec_y, scale, cell_height ), 
-												new Color(20, 80, 145, 120 + mass_alpha) );
+												new Color(20, 80, 145, 90 + mass_alpha) );
 							//uncommenting the below line causes the mass of a cell to be rendered as a string. use only if cells are 32x32 or larger!
 							//spriteBatch.DrawString(sf_segoe, acell.StateToString( ) + "\n" + depth_color, new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.Gray);
 							break;
@@ -351,7 +351,7 @@ namespace ca_water_prototype
 						int remainingMass = cells[row, col].mass;
 						int deltaUpperBound = 0; //when determining the deltaMass to move around, we may want to bound it to a max delta.
 
-						if (remainingMass < 4) { continue; } //if there isn't enough mass to work with, we'll ignore this block. Done after every rule.
+						if (remainingMass < Min_Mass) { continue; } //if there isn't enough mass to work with, we'll ignore this block. Done after every rule.
 
 						//consider block below (if it exists)
 						if (row < Cell_Rows-1 && cells[row+1, col].is_fillable)
@@ -380,7 +380,7 @@ namespace ca_water_prototype
 							remainingMass -= deltaMass;
 						}
 
-						if (remainingMass < 4) { continue; }
+						if (remainingMass < Min_Mass) { continue; }
 
 						//consider the left neighbor (if it exists)
 						if (col > 0 && cells[row, col-1].is_fillable)
@@ -405,7 +405,7 @@ namespace ca_water_prototype
 							remainingMass -= deltaMass;
 						}
 
-						if (remainingMass < 4) { continue; }
+						if (remainingMass < Min_Mass) { continue; }
 
 						//consider the right neighbor (if it exists)
 						if (col < Cell_Columns-1 && cells[row, col+1].is_fillable)
@@ -430,7 +430,7 @@ namespace ca_water_prototype
 							remainingMass -= deltaMass;
 						}
 
-						if (remainingMass < 4) { continue; }
+						if (remainingMass < Min_Mass) { continue; }
 
 						//consider cell above us (if it exists) Cell only adds to above cell if it has compressed mass)
 						if (row > 0 && cells[row-1, col].is_fillable)

@@ -26,8 +26,8 @@ namespace ca_water_prototype
 	public struct Cell
 	{
 		//In the future, set values to something smaller to reduce footprint of arrays of cells. e.g. mass might fit better in a byte. Or use same INT for future_mass and current_mass, but use shifting and bool ops to divvy the variable up.
-        public static const int Max_Mass = 1000;
-        public static const int Min_Mass = 2;
+        public const int Max_Mass = 1000;
+        public const int Min_Mass = 2;
         
         public bool is_fillable;
 		public int x, y, future_mass;
