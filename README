@@ -7,11 +7,6 @@ Helped me get my rule updates in order, much better than it was before.
 Also implemented water compression based on what was shown in the article. I moved my implementation away from floating point though.
 
 
-One thing too note, that's odd about adding water compression: In situations where Water Pressure should take effect (i.e. water in a U-Pipe), instead of pushing up the side or acting as if water pressure wasn't in effect...
+One thing too note, that's odd about adding water compression: In situations where Water Pressure should take effect (i.e. water in a U-Pipe), compression alone does SORT of accomplish the thing. As it it were VERY low pressure...
 
-It pushes the higher side 'down' and raises the lower side 'up' a little bit, then the system just starts to lose volume!
-
-I'm thinking of implementing water pressure similar to how it was described here: http://www.gamasutra.com/view/feature/131954/interview_the_making_of_dwarf_.php?page=10
-
-Manually moving the water as it would be if water pressure worked DOES fix the disapearing volume (sort of, close enough for a game anyways)
-
+I'm thinking of implementing water pressure similar to how it was described here: http://www.gamasutra.com/view/feature/131954/interview_the_making_of_dwarf_.php?page=9
