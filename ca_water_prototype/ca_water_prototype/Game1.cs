@@ -56,6 +56,7 @@ namespace ca_water_prototype
 		KeyboardState last_kboardstate;
 		MouseState last_mousestate;
 		Vector2 cursor_pos;
+
         bool Toggle_Fullscreen;
 		bool Toggle_MassDisplay;
 		//bool Screen_Drawn;
