@@ -37,6 +37,8 @@ namespace ca_water_prototype
 		public const int Cell_Columns = 32;		//determines the height of the map aswell.
 		public const int Cell_Rows = 18;		//determines the width of the map aswell.
 
+		public const string Instructions = 	"Left Click - add Wall. Right Click - add Water. Shift+Click: delete. Press 'S' to show cell masses. 'F' to toggle fullscreen";
+
 		public const Double mass_to_height = (Cell_Size / (Double)Max_Mass); //cell mass to heigh conversion table/array
 
 		public const Double Water_ClockRate = 10; //evalutate cells every XXXXms.
@@ -54,7 +56,9 @@ namespace ca_water_prototype
 		KeyboardState last_kboardstate;
 		MouseState last_mousestate;
 		Vector2 cursor_pos;
-        bool Is_Fullscreen;
+        bool Toggle_Fullscreen;
+		bool Toggle_MassDisplay;
+		//bool Screen_Drawn;
 		#endregion
 
 		#region Water CA Variables
@@ -71,7 +75,7 @@ namespace ca_water_prototype
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.IsFullScreen = false;
-            Is_Fullscreen = false;
+            Toggle_Fullscreen = false;
 			field_width = Cell_Size * Cell_Columns + Cell_OffsetX;
 			field_height = Cell_Size * Cell_Rows + Cell_OffsetY;
 			graphics.PreferredBackBufferWidth = field_width;
@@ -85,6 +89,8 @@ namespace ca_water_prototype
 
             last_kboardstate = Keyboard.GetState( );
 			last_mousestate = Mouse.GetState( );
+			Toggle_MassDisplay = false;
+
 
 			#region Water CA Initialization
 			//set number of columns, how many cells per columns, and the dimensions of the cells. 
@@ -151,14 +157,32 @@ namespace ca_water_prototype
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||  kboardstate.IsKeyDown(Keys.Escape))
                 this.Exit();
 
+
+			water_clock += gameTime.ElapsedGameTime.Milliseconds;
+			//run as many times as needed to keep pace.
+			if (water_clock > Water_ClockRate)
+			{
+				water_clock -= Water_ClockRate;
+				RunCellRules( );
+				CountMass( );
+			}
+
             if (kboardstate.IsKeyDown(Keys.F) && last_kboardstate.IsKeyUp(Keys.F))
             {
-                if (Is_Fullscreen) { Is_Fullscreen = false; }
-                else { Is_Fullscreen = true; }
+                if (Toggle_Fullscreen) { Toggle_Fullscreen = false; }
+                else { Toggle_Fullscreen = true; }
 
-                graphics.IsFullScreen = Is_Fullscreen;
+                graphics.IsFullScreen = Toggle_Fullscreen;
                 graphics.ApplyChanges();
             }
+
+			if (kboardstate.IsKeyDown(Keys.S) && last_kboardstate.IsKeyUp(Keys.S))
+            {
+                if (Toggle_MassDisplay) { Toggle_MassDisplay = false; }
+                else { Toggle_MassDisplay = true; }
+
+            }
+
 
 			//holding shift and clicking will remove anything in the highlighted cell.
 			if (mousestate.RightButton == ButtonState.Pressed)
@@ -200,16 +224,6 @@ namespace ca_water_prototype
 					}
 				}
 			}
-
-			
-			water_clock += gameTime.ElapsedGameTime.Milliseconds;
-			//run as many times as needed to keep pace.
-			if (water_clock > Water_ClockRate)
-			{
-				water_clock -= Water_ClockRate;
-				RunCellRules( );
-				CountMass( );
-			}
 			
 			last_kboardstate = kboardstate;
 			last_mousestate = mousestate;
@@ -242,14 +256,14 @@ namespace ca_water_prototype
 			{
 				int cellindrow= GetCellInd(snapPos.Y, Cell_Rows, Cell_OffsetY);
 				int cellindcol= GetCellInd(snapPos.X, Cell_Columns, Cell_OffsetX );
-				String output = String.Format("C [{0}:{1}-> {2}"
+				String output = String.Format("C [{0}:{1}] {2}"
 							,(int)( ( (snapPos.Y - Cell_OffsetY) / Cell_Size) % Cell_Rows),
 							(int)( ( (snapPos.X - Cell_OffsetX) / Cell_Size) % Cell_Columns),
 							cells[ cellindrow, cellindcol].StateToString());
 				spriteBatch.DrawString(sf_segoe, output, new Vector2(snapPos.X + 3, snapPos.Y - 15), Color.Black);
 				spriteBatch.Draw( tex2d_grid, snapPos, new Rectangle( 0, 0, Cell_Size, Cell_Size ), Color.White );
 			}
-
+			spriteBatch.DrawString(sf_segoe, Instructions, new Vector2(0, 0), Color.Black);
 			spriteBatch.End( );
 
 			has_drawn++;
@@ -295,7 +309,11 @@ namespace ca_water_prototype
 							spriteBatch.Draw( pixel_water, new Rectangle( rec_x, rec_y, scale, cell_height ), 
 												new Color(20, 80, 145, 100) );
 							//uncommenting the below line causes the mass of a cell to be rendered as a string. use only if cells are 32x32 or larger!
-							spriteBatch.DrawString(sf_segoe, acell.StateToString( ), new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.Gray);
+							if (Toggle_MassDisplay)
+							{
+								spriteBatch.DrawString( sf_segoe, acell.StateToString( ),
+										new Vector2( acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4) ), Color.Gray );
+							}
 							break;
 						case (int)CellState.Wall:
 							spriteBatch.Draw(	tex2d_wall,
