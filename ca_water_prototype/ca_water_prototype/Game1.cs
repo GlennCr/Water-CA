@@ -168,15 +168,15 @@ namespace ca_water_prototype
 				{
 					int cellindy = GetCellInd(gridpos.Y, Cell_Rows, Cell_OffsetY);
 					int cellindx = GetCellInd(gridpos.X, Cell_Columns, Cell_OffsetX);
-					if (kboardstate.IsKeyDown( Keys.LeftShift ))
+					if (kboardstate.IsKeyDown(Keys.LeftShift) )
 					{
-						cells[cellindy, cellindx].mass = 0;
-						cells[cellindy, cellindx].state = (int)CellState.Empty;
+						cells[cellindy, cellindx].mass = 300;
+						cells[cellindy, cellindx].state = (int)CellState.Water;
 					}
 					else
 					{
 						cells[cellindy, cellindx].state = (int)CellState.Water;
-						cells[cellindy, cellindx].mass = Max_Mass;
+						cells[cellindy, cellindx].mass = 150;
 					}
 				}
 			}
@@ -188,7 +188,7 @@ namespace ca_water_prototype
 				{
 					int cellindy = GetCellInd(gridpos.Y, Cell_Rows, Cell_OffsetY);
 					int cellindx = GetCellInd(gridpos.X, Cell_Columns, Cell_OffsetX);
-					if (kboardstate.IsKeyDown( Keys.LeftShift ))
+					if (kboardstate.IsKeyDown( Keys.LeftShift ) )
 					{
 						cells[cellindy, cellindx].mass = 0;
 						cells[cellindy, cellindx].state = (int)CellState.Empty;
@@ -279,7 +279,7 @@ namespace ca_water_prototype
 					{
 						case (int)CellState.Water:
 							int cell_height = 0;
-							if( acell.mass > Max_Mass || ( row > 0 && cells[row - 1, col].mass > Min_Mass * 5))
+							if( acell.mass > Max_Mass || ( row > 0 && cells[row - 1, col].mass > Min_Mass))
 							{ //keep everything drawing within the bounds of a cell.
 								cell_height = Cell_Size;
 							}
@@ -295,7 +295,7 @@ namespace ca_water_prototype
 							spriteBatch.Draw( pixel_water, new Rectangle( rec_x, rec_y, scale, cell_height ), 
 												new Color(20, 80, 145, 100) );
 							//uncommenting the below line causes the mass of a cell to be rendered as a string. use only if cells are 32x32 or larger!
-							//spriteBatch.DrawString(sf_segoe, acell.StateToString( ) + "\n" + depth_color, new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.Gray);
+							spriteBatch.DrawString(sf_segoe, acell.StateToString( ), new Vector2(acell.x + (Cell_Size / 5), acell.y + (Cell_Size / 4)), Color.Gray);
 							break;
 						case (int)CellState.Wall:
 							spriteBatch.Draw(	tex2d_wall,

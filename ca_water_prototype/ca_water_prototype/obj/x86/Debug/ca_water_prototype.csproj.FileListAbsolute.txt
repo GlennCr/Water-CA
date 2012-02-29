@@ -36,3 +36,5 @@ C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\De
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\ca_water_prototype.exe
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\ca_water_prototype.pdb
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\noisebg.xnb
+C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\segoe.spritefont
+C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\noisebg.png
