@@ -27,7 +27,7 @@ namespace ca_water_prototype
 	{
 		//In the future, set values to something smaller to reduce footprint of arrays of cells. e.g. mass might fit better in a byte. Or use same INT for future_mass and current_mass, but use shifting and bool ops to divvy the variable up.
         public const int Max_Mass = 1000;
-        public const int Min_Mass = 2;
+        public const int Min_Mass = 3;
         
         public bool is_fillable;
 		public int x, y, future_mass;
@@ -93,13 +93,22 @@ namespace ca_water_prototype
 			is_fillable = fillable;
 		}
 
+		public int alpha_mass
+		{
+			get
+			{
+				return (50 * _mass/ Max_Mass);
+			}
+			private set { }
+		}
+
 		public String StateToString ( )
 		{
 			switch (_state)
 			{
 				case (int)CellState.Empty: return "Empty";
 				case (int)CellState.Wall: return "Wall";
-				case (int)CellState.Water: return String.Format("{0}%", (int)(_mass * (100 / (double)Max_Mass)) );
+				case (int)CellState.Water: return String.Format("{0}", 10 * _mass/ Max_Mass );
 
 				default: return "NULL";	
 			}
