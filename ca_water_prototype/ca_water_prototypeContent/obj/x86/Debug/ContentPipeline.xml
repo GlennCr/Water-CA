@@ -7,8 +7,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\water.xnb</Output>
-      <Time>2012-02-29T14:01:51-07:00</Time>
+      <Output>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\water.xnb</Output>
+      <Time>2012-03-01T15:20:12.4618878-07:00</Time>
     </Item>
     <Item>
       <Source>error.png</Source>
@@ -16,8 +16,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\error.xnb</Output>
-      <Time>2012-02-29T14:01:51-07:00</Time>
+      <Output>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\error.xnb</Output>
+      <Time>2012-03-01T15:20:12.359882-07:00</Time>
     </Item>
     <Item>
       <Source>grid.png</Source>
@@ -25,8 +25,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\grid.xnb</Output>
-      <Time>2012-02-29T14:01:51-07:00</Time>
+      <Output>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\grid.xnb</Output>
+      <Time>2012-03-01T15:20:12.3638822-07:00</Time>
     </Item>
     <Item>
       <Source>wall.png</Source>
@@ -34,17 +34,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\wall.xnb</Output>
-      <Time>2012-02-29T14:01:51-07:00</Time>
-    </Item>
-    <Item>
-      <Source>segoe.spritefont</Source>
-      <Name>segoe</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\segoe.xnb</Output>
-      <Time>2012-02-29T14:01:51-07:00</Time>
+      <Output>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\wall.xnb</Output>
+      <Time>2012-03-01T15:20:12.4538873-07:00</Time>
     </Item>
     <Item>
       <Source>noisebg.png</Source>
@@ -52,8 +43,17 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\noisebg.xnb</Output>
-      <Time>2012-02-29T14:01:51-07:00</Time>
+      <Output>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\noisebg.xnb</Output>
+      <Time>2012-03-01T15:20:12.3848834-07:00</Time>
+    </Item>
+    <Item>
+      <Source>segoe.spritefont</Source>
+      <Name>segoe</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\segoe.xnb</Output>
+      <Time>2012-03-01T15:20:12.4508872-07:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -61,10 +61,10 @@
       <TargetProfile>HiDef</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototypeContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototypeContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
@@ -92,8 +92,8 @@
         <Value>2010-08-23T12:41:18-07:00</Value>
       </Assembly>
       <Assembly>
-        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2011-01-30T19:39:14.3068203-07:00</Value>
+        <Key>C:\windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2011-11-16T19:14:56.8962469-07:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>
