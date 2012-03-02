@@ -58,7 +58,7 @@
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <TargetPlatform>Windows</TargetPlatform>
-      <TargetProfile>HiDef</TargetProfile>
+      <TargetProfile>Reach</TargetProfile>
       <BuildConfiguration>Release</BuildConfiguration>
       <CompressContent>true</CompressContent>
       <RootDirectory>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototypeContent\</RootDirectory>
