@@ -7,7 +7,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\water.xnb</Output>
+      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\water.xnb</Output>
       <Time>2012-03-01T01:05:25.9068593-07:00</Time>
     </Item>
     <Item>
@@ -16,7 +16,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\error.xnb</Output>
+      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\error.xnb</Output>
       <Time>2012-03-01T01:05:25.885375-07:00</Time>
     </Item>
     <Item>
@@ -25,7 +25,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\grid.xnb</Output>
+      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\grid.xnb</Output>
       <Time>2012-03-01T01:05:25.885375-07:00</Time>
     </Item>
     <Item>
@@ -34,7 +34,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\wall.xnb</Output>
+      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\wall.xnb</Output>
       <Time>2012-03-01T01:05:25.9058828-07:00</Time>
     </Item>
     <Item>
@@ -43,7 +43,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\noisebg.xnb</Output>
+      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\noisebg.xnb</Output>
       <Time>2012-03-01T01:05:25.8951406-07:00</Time>
     </Item>
     <Item>
@@ -52,19 +52,19 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\segoe.xnb</Output>
+      <Output>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\segoe.xnb</Output>
       <Time>2012-03-01T01:05:25.9058828-07:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <TargetPlatform>Windows</TargetPlatform>
       <TargetProfile>HiDef</TargetProfile>
-      <BuildConfiguration>Debug</BuildConfiguration>
-      <CompressContent>false</CompressContent>
+      <BuildConfiguration>Release</BuildConfiguration>
+      <CompressContent>true</CompressContent>
       <RootDirectory>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototypeContent\</RootDirectory>
       <LoggerRootDirectory>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\</OutputDirectory>
+      <IntermediateDirectory>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototypeContent\obj\x86\Release\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Release\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>

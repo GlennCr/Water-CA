@@ -34,3 +34,21 @@ C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water
 C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
 C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\obj\x86\Debug\ca_water_prototype.exe
 C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototype\obj\x86\Debug\ca_water_prototype.pdb
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\water.xnb
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\error.xnb
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\grid.xnb
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\wall.xnb
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\noisebg.xnb
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\segoe.xnb
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\water.png
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\error.png
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\grid.png
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\wall.png
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\segoe.spritefont
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\Content\noisebg.png
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\ca_water_prototype.exe
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\bin\x86\Debug\ca_water_prototype.pdb
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\obj\x86\Debug\ca_water_prototype.exe
+C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototype\obj\x86\Debug\ca_water_prototype.pdb

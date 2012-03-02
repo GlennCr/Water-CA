@@ -61,8 +61,9 @@ namespace ca_water_prototype
 
         bool Toggle_Fullscreen;
 		bool Toggle_MassDisplay;
-		string Instructions = 	"Left Click - add Wall. Right Click - add Water. Shift+Click: delete.\n Press 'S' to show cell masses. 'F' to toggle fullscreen.";
+		string Instructions = 	"FPS: {0}\nLeft Click - add Wall (+shift to delete). Right Click - add Water (+shift to add faster).\n Press 'S' to show cell masses. 'F' to toggle fullscreen.";
 		//bool Screen_Drawn;
+		int frames, seconds, fps;
 		#endregion
 
 		#region Water CA Variables
@@ -87,7 +88,9 @@ namespace ca_water_prototype
             last_kboardstate = Keyboard.GetState( );
 			last_mousestate = Mouse.GetState( );
 			Toggle_MassDisplay = false;
-
+			frames = 0;
+			seconds= 0;
+			fps = 0;
 
 			#region Water CA Initialization
 			//set number of columns, how many cells per columns, and the dimensions of the cells. 
@@ -148,34 +151,40 @@ namespace ca_water_prototype
         {
             KeyboardState kboardstate = Keyboard.GetState( );
 			MouseState mousestate = Mouse.GetState( );
+			seconds += gameTime.ElapsedGameTime.Milliseconds;
+			if (seconds >= 1000)
+			{
+				seconds -= 1000;
+				fps = frames;
+				frames = 0;
+			}
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||  kboardstate.IsKeyDown(Keys.Escape))
                 this.Exit();
 			for (int i = 0; i < 4; i++)
 			{
 				RunCellRules( );
-				Console.WriteLine( gameTime.ElapsedGameTime.Milliseconds.ToString( ) );
 
-				//holding shift and clicking will remove anything in the highlighted cell.
-			if (mousestate.RightButton == ButtonState.Pressed)
-			{	//when Right clicking, add blocks of water
-				Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
-				if (OnGrid( gridpos.X, gridpos.Y ))
-				{
-					int cellindy = GetCellInd(gridpos.Y, Cell_Rows, Cell_OffsetY);
-					int cellindx = GetCellInd(gridpos.X, Cell_Columns, Cell_OffsetX);
-					if (kboardstate.IsKeyDown(Keys.LeftShift) )
+					//holding shift and clicking will remove anything in the highlighted cell.
+				if (mousestate.RightButton == ButtonState.Pressed)
+				{	//when Right clicking, add blocks of water
+					Vector2 gridpos = GridPosition( mousestate.X, mousestate.Y );
+					if (OnGrid( gridpos.X, gridpos.Y ))
 					{
-						cells[cellindy, cellindx].mass = (int)(Max_Mass * .1);
-						cells[cellindy, cellindx].state = (int)CellState.Water;
-					}
-					else
-					{
-						cells[cellindy, cellindx].state = (int)CellState.Water;
-						cells[cellindy, cellindx].mass = (int)(Max_Mass * .025);
+						int cellindy = GetCellInd(gridpos.Y, Cell_Rows, Cell_OffsetY);
+						int cellindx = GetCellInd(gridpos.X, Cell_Columns, Cell_OffsetX);
+						if (kboardstate.IsKeyDown(Keys.LeftShift) )
+						{
+							cells[cellindy, cellindx].mass = (int)(Max_Mass * .1);
+							cells[cellindy, cellindx].state = (int)CellState.Water;
+						}
+						else
+						{
+							cells[cellindy, cellindx].state = (int)CellState.Water;
+							cells[cellindy, cellindx].mass = (int)(Max_Mass * .025);
+						}
 					}
 				}
-			}
 			}
 
             if (kboardstate.IsKeyDown(Keys.F) && last_kboardstate.IsKeyUp(Keys.F))
@@ -261,9 +270,10 @@ namespace ca_water_prototype
 				spriteBatch.DrawString(sf_segoe, output, new Vector2(snapPos.X + 3, snapPos.Y - 15), Color.Black);
 				spriteBatch.Draw( tex2d_grid, snapPos, new Rectangle( 0, 0, Cell_Size, Cell_Size ), Color.White );
 			}
-			spriteBatch.DrawString(sf_segoe, String.Format(Instructions), new Vector2(0, 0), Color.Black);
+			spriteBatch.DrawString(sf_segoe, String.Format(Instructions, fps), new Vector2(0, 0), Color.Black);
 			spriteBatch.End( );
 
+			frames++;
             base.Draw(gameTime);
         }
 
