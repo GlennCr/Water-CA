@@ -1,6 +1,27 @@
-Working on Water Pressure, and tweaking aspects of water flow (I really would like it to even itself out faster you see)
+Instructions for Downloading and Running the CA Water Simulator
 
-I'm going to try and implement water pressure similar to how it was described here: http://www.gamasutra.com/view/feature/131954/interview_the_making_of_dwarf_.php?page=9
+1. Click the .ZIP button at the top of page (or click this link: https://github.com/GlennCr/Water-CA/zipball/master )
+2. Save the file to your computer, and extract it to a location on your computer.
+3. Open the extracted folder. Inside you will find a folder labeled 'Current Build'.
+4. Open the 'Current Build' folder. Inside you should find the executable, 'ca_water_prototype.exe'
+5. Double-click the executable 'ca_water_prototype.exe'. A new window should appear.
+6. Instructions on how to use the application will be displayed in the top left corner of the screen.
+  6a. Use the left mouse button to add 'wall' cells (holding shift will delete cells). 
+  6b. Use the right mouse button to add 'water' cells (holding shift will create 'water' cells faster.)
+
+Note on running the current build:
+  CA Water uses the XNA framework, part of the Microsoft .NET 4 framework. If you have difficulty running the executable, 
+    - Ensure you have an up to date version of Microsoft .NET ( http://www.microsoft.com/download/en/details.aspx?id=17718 )
+    - Ensure you have an up to date version of the XNA Framework Redistributable (http://www.microsoft.com/download/en/details.aspx?id=20914)
+
+Features In Development:
+
+# Water Pressure
+  - Using a process based upon what is described here: http://www.gamasutra.com/view/feature/131954/interview_the_making_of_dwarf_.php?page=9
+# Queued Rule Operations 
+  - Currently the system is limited to using cells of 4px X 4px or larger in order to maintain a reasonable framerate of 30fps or higher. Implementing a Queue for rule execution will likely allow displaying a screen of 1px X 1px cells in real time   
+# Library
+  - Porting the code to an extensible library will simplify implementing this code into future applications and open the possibility for developing educational tools.
 
 
-Special thanks for Professor Farin for pointing out water does not compress! If anyone does use the w-shadow example as a basis for water CA (linked in first attempt) bear in mind that it won't accurately model water!
+Special thanks to Professor Gerald Farin for clarifying the properties of compressible and incompressible liquids! With his advice the simulation has greatly improved.
