@@ -16,7 +16,7 @@ What does CA stand for?
 
 ** Why use Cellular Automation to simulate Fluid?
 
- Cellular Automation has the interesting property of producing very complex systems from a very small set of initial data and low cost calculations. Water-CA runs on three general rules for example, (converted into code of course)
+ Cellular Automation has the interesting property of generating what appear to be complex systems, which in reality  are just the results of a simple, low cost calculations. Water-CA runs on three general rules for example, (converted into code of course)
 
  1. Cells with water can give a portion of that volume to their bottom neighbor if it is not full.
  2. Cells with water can move a portion of that volume into their left or right neighbor if they have less volume.
