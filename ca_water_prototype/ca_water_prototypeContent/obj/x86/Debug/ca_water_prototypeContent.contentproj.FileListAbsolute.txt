@@ -1,3 +1,5 @@
 C:\Users\Glenn\Dropbox\Game Dev\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Users\glenn\Documents\Visual Studio 2010\Projects\ca_water_prototype\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Users\Glenn\Programs\Water CA\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\glenn\Apps\ca_water_prototype\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Glenn\Dropbox\Game Dev\ca_water_1\ca_water_prototype\ca_water_prototypeContent\obj\x86\Debug\ResolveAssemblyReference.cache

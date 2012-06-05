@@ -10,7 +10,7 @@ namespace ca_water_prototype
         /// </summary>
         static void Main(string[] args)
         {
-            using (Game1 game = new Game1())
+            using (CAWater game = new CAWater())
             {
                 game.Run();
             }

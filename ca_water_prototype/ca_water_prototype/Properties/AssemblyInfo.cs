@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ca_water_prototype")]
-[assembly: AssemblyProduct("ca_water_prototype")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyTitle("CAWater")]
+[assembly: AssemblyProduct("CAWater")]
+[assembly: AssemblyDescription("Educational Water Approximation Toy")]
+[assembly: AssemblyCompany("CA-Water")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
